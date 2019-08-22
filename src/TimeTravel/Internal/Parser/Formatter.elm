@@ -86,7 +86,7 @@ makeModelWithContext c ast =
 
 
 makeModelFromListLike : Bool -> AST.ASTId -> String -> Int -> String -> String -> List FormatModel -> FormatModel
-makeModelFromListLike canFold id indent wordsLimit start end list =
+makeModelFromListLike canFold id indent_ wordsLimit start end list =
   case list of
     [] ->
        Plain <| start ++ end
@@ -102,12 +102,12 @@ makeModelFromListLike canFold id indent wordsLimit start end list =
         long =
           String.length singleLineStr > wordsLimit || String.contains "\n" singleLineStr
       in
-        if (indent /= "" && canFold) && long then
+        if (indent_ /= "" && canFold) && long then
           Long id (start ++ " .. " ++ end)
-            ( Plain (start ++ " ") :: ((joinX ("\n" ++ indent ++ ", ") list) ++ [Plain <| "\n" ++ indent] ++ [ Plain end ])
+            ( Plain (start ++ " ") :: ((joinX ("\n" ++ indent_ ++ ", ") list) ++ [Plain <| "\n" ++ indent_] ++ [ Plain end ])
             )
         else if long then
-          Listed ( Plain (start ++ " ") :: ((joinX ("\n" ++ indent ++ ", ") list) ++ [Plain <| "\n" ++ indent] ++ [ Plain end ])
+          Listed ( Plain (start ++ " ") :: ((joinX ("\n" ++ indent_ ++ ", ") list) ++ [Plain <| "\n" ++ indent_] ++ [ Plain end ])
           )
         else
           singleLine
@@ -145,16 +145,14 @@ formatAsHtml selectFilterMsg toggleMsg expandedTree model =
     (\id alt children ->
       if Set.member id expandedTree then
         span
-          [ style S.modelDetailFlagmentToggleExpand
-          , onClick (toggleMsg id)
-          ]
+          ([ onClick (toggleMsg id)
+          ] ++ S.styles S.modelDetailFlagmentToggleExpand)
           [ text " - " ]
         :: List.concatMap (formatAsHtml selectFilterMsg toggleMsg expandedTree) children
       else
         [ span
-            [ style S.modelDetailFlagmentToggle
-            , onClick (toggleMsg id)
-            ]
+            ([ onClick (toggleMsg id)
+            ] ++ S.styles S.modelDetailFlagmentToggle)
             [ text alt ]
         ]
     ) model
@@ -163,7 +161,7 @@ formatAsHtml selectFilterMsg toggleMsg expandedTree model =
 formatPlainAsHtml : String -> List (Html msg)
 formatPlainAsHtml s =
    [ span
-     ( [ style S.modelDetailFlagment ] ++
+     ( S.styles S.modelDetailFlagment ++
        if String.startsWith "\"" s then [ title s ] else []
       )
      [ text s ]
@@ -175,9 +173,8 @@ formatLinkAsHtml selectFilterMsg id s =
    [ hover
        S.modelDetailFlagmentLinkHover
        span
-       [ style S.modelDetailFlagmentLink
-       , onClick (selectFilterMsg id)
-       ]
+       ([ onClick (selectFilterMsg id)
+       ] ++ S.styles S.modelDetailFlagmentLink)
        [ text s ]
    ]
 

@@ -68,7 +68,7 @@ attachIdToList id list =
 attachIdToListWithIndex : String -> List AST -> List ASTX
 attachIdToListWithIndex id list =
   List.indexedMap (\index p ->
-    attachId (id ++ "." ++ toString index) p
+    attachId (id ++ "." ++ String.fromInt index) p
   ) list
 
 

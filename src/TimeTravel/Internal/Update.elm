@@ -11,12 +11,12 @@ update save message model =
       if incomingMsg.type_ == "load" then
         case decodeSettings incomingMsg.settings of
           Ok { fixedToLeft, filter } ->
-            { model | fixedToLeft = fixedToLeft, filter = filter } ! []
+            ({ model | fixedToLeft = fixedToLeft, filter = filter }, Cmd.none)
 
-          Err _ ->
-            model ! [] |> Debug.log "err decoding"
+          Err error ->
+            (model, Cmd.none) |> Debug.log "err decoding"
       else
-        model ! []
+        (model, Cmd.none)
 
     ToggleSync ->
       let
@@ -34,14 +34,14 @@ update save message model =
           |> selectFirstIfSync
           |> if nextSync then futureToHistory else identity
       in
-        newModel ! []
+        (newModel, Cmd.none)
 
     ToggleExpand ->
       let
         newModel =
           { model | expand = not model.expand }
       in
-        newModel ! []
+        (newModel, Cmd.none)
 
     ToggleFilter name ->
       let
@@ -58,7 +58,7 @@ update save message model =
               model.filter
           }
       in
-        newModel ! [ saveSetting save newModel ]
+        (newModel, Cmd.batch [ saveSetting save newModel ])
 
     SelectMsg id ->
       let
@@ -68,7 +68,7 @@ update save message model =
           , sync = False
           } |> updateLazyAst |> updateLazyDiff
       in
-        newModel ! []
+        (newModel, Cmd.none)
 
     Resync ->
       let
@@ -77,7 +77,7 @@ update save message model =
             sync = True
           } |> selectFirstIfSync |> futureToHistory
       in
-        newModel ! []
+        (newModel, Cmd.none)
 
     ToggleLayout ->
       let
@@ -86,17 +86,17 @@ update save message model =
             fixedToLeft = not (model.fixedToLeft)
           }
       in
-        newModel ! [ saveSetting save newModel ]
+        (newModel, Cmd.batch [ saveSetting save newModel ])
 
     ToggleModelDetail showModelDetail ->
         ( { model |
             showModelDetail = showModelDetail
           }
           |> updateLazyDiff
-        ) ! []
+        , Cmd.none)
 
     ToggleModelTree id ->
-      { model | expandedTree = toggleSet id model.expandedTree } ! []
+      ({ model | expandedTree = toggleSet id model.expandedTree }, Cmd.none)
 
     ToggleMinimize ->
       ( { model |
@@ -105,13 +105,13 @@ update save message model =
         }
         |> selectFirstIfSync
         |> futureToHistory
-      ) ! []
+      , Cmd.none)
 
     InputModelFilter s ->
-      { model | modelFilter = s } ! []
+      ({ model | modelFilter = s }, Cmd.none)
 
     SelectModelFilter id ->
-      { model | modelFilter = id } ! []
+      ({ model | modelFilter = id }, Cmd.none)
 
     SelectModelFilterWatch id ->
       ( { model |
@@ -119,12 +119,12 @@ update save message model =
         , watch = Just id
         }
         |> updateLazyAstForWatch
-      ) ! []
+      , Cmd.none)
 
     StopWatching ->
-      { model |
+      ({ model |
         watch = Nothing
-      } ! []
+      }, Cmd.none)
 
 
 toggleSet : comparable -> Set comparable -> Set comparable
@@ -134,4 +134,4 @@ toggleSet a set =
 
 updateAfterUserMsg : (OutgoingMsg -> Cmd Never) -> Model model msg -> (Model model msg, Cmd Msg)
 updateAfterUserMsg save model =
-  model ! [ saveSetting save model ]
+  (model, Cmd.batch [ saveSetting save model ])

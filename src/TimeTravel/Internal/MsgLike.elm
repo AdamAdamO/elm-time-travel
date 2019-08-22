@@ -9,5 +9,5 @@ type MsgLike msg
 format : MsgLike msg -> String
 format msgLike =
   case msgLike of
-    Message m -> toString m
+    Message m -> Debug.toString m
     Init -> "[Init]"

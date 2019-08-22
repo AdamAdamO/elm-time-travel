@@ -1,5 +1,15 @@
 module TimeTravel.Internal.Styles exposing (..)
 
+import Html
+import Html.Attributes 
+
+styles: List (String, String) -> List (Html.Attribute msg)
+styles styles_ = 
+  let
+      style (name, value) = Html.Attributes.style name value
+  in
+  
+  List.map style styles_
 
 zIndex = { modelDetailView = "2147483646", debugView = "2147483646", resyncView = "2147483645" }
 

@@ -23,21 +23,20 @@ parse s =
 expression : Parser s AST
 expression =
   lazy (\_ ->
-    union <|>
-    expressionWithoutUnion
+    or union expressionWithoutUnion
   )
 
 
 expressionWithoutUnion : Parser s AST
 expressionWithoutUnion =
   lazy (\_ ->
-    record <|>
-    listLiteral <|>
-    tupleLiteral <|>
-    internalStructure <|>
-    stringLiteral <|>
-    numberLiteral <|>
-    null
+    record 
+    |> or listLiteral 
+    |> or tupleLiteral
+    |> or internalStructure
+    |> or stringLiteral
+    |> or numberLiteral
+    |> or null
   )
 
 
@@ -86,9 +85,9 @@ items =
 union : Parser s AST
 union =
   lazy (\_ ->
-  (\tag tail -> Union tag tail)
-  <$> tag
-  <*> many unionParam
+    tag
+    |> map (\tag_ tail -> Union tag_ tail)
+    |> andMap (many unionParam)
   )
 
 
@@ -109,16 +108,16 @@ union =
 singleUnion : Parser s AST
 singleUnion =
   lazy (\_ ->
-    map (\tag -> Union tag []) tag
+    map (\tag_ -> Union tag_ []) tag
   )
 
 
 unionParam : Parser s AST
 unionParam =
   lazy (\_ ->
-  (\_ exp  -> exp)
-  <$> spaces
-  <*> (singleUnion <|> expressionWithoutUnion)
+    spaces
+    |> map (\_ exp  -> exp)
+    |> andMap (or singleUnion expressionWithoutUnion)
   )
 
 
@@ -149,12 +148,12 @@ propertyKey =
 property : Parser s AST
 property =
   lazy (\_ ->
-  (\_ key _ _ _ value _ -> Property key value)
-  <$> spaces
-  <*> propertyKey
-  <*> spaces
-  <*> equal
-  <*> spaces
-  <*> expression
-  <*> spaces
+    spaces
+    |> map (\_ key _ _ _ value _ -> Property key value)
+    |> andMap propertyKey
+    |> andMap spaces
+    |> andMap equal
+    |> andMap spaces
+    |> andMap expression
+    |> andMap spaces
   )

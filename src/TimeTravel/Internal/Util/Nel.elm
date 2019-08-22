@@ -6,13 +6,13 @@ type Nel a =
 
 
 toList : Nel a -> List a
-toList (Nel head tail) =
-  head :: tail
+toList (Nel head_ tail) =
+  head_ :: tail
 
 
 map : (a -> b) -> Nel a -> Nel b
-map f (Nel head tail) =
-  Nel (f head) (List.map f tail)
+map f (Nel head_ tail) =
+  Nel (f head_) (List.map f tail)
 
 
 filter : (a -> Bool) -> Nel a -> List a
@@ -35,8 +35,8 @@ findHelp f list =
   case list of
     [] ->
       Nothing
-    head :: tail ->
-      if f head then Just head else findHelp f tail
+    head_ :: tail ->
+      if f head_ then Just head_ else findHelp f tail
 
 
 findMap : (a -> Maybe b) -> Nel a -> Maybe b
@@ -49,8 +49,8 @@ findMapHelp f list =
   case list of
     [] ->
       Nothing
-    head :: tail ->
-      case f head of
+    head_ :: tail ->
+      case f head_ of
         Nothing -> findMapHelp f tail
         x -> x
 
@@ -93,15 +93,15 @@ takeHelp result n list =
 
 
 head : Nel a -> a
-head (Nel head tail) =
-  head
+head (Nel head_ tail) =
+  head_
 
 
 concat : List a -> Nel a -> Nel a
 concat list (Nel h t) =
   case list of
-    head :: tail ->
-      Nel head (tail ++ (h :: t))
+    head_ :: tail ->
+      Nel head_ (tail ++ (h :: t))
     _ ->
       Nel h t
 

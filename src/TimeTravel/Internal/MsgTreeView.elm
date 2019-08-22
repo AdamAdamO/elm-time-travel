@@ -17,7 +17,7 @@ import InlineHover exposing (hover)
 view : (Id -> m) -> Id -> RTree (HistoryItem model msg) -> Html m
 view onSelect selectedMsg tree =
   div
-    [ style S.msgTreeView ]
+    (S.styles S.msgTreeView)
     (viewTree onSelect 0 selectedMsg tree)
 
 
@@ -32,7 +32,6 @@ itemRow onSelect indent selectedMsg item =
   hover
     (S.msgTreeViewItemRowHover (selectedMsg == item.id))
     div
-    [ style (S.msgTreeViewItemRow (selectedMsg == item.id))
-    , onClick (onSelect item.id)
-    ]
-    [ text (String.repeat indent "    " ++ toString item.id ++ ": " ++ MsgLike.format item.msg) ]
+    ([ onClick (onSelect item.id)
+    ] ++ S.styles (S.msgTreeViewItemRow (selectedMsg == item.id)))
+    [ text (String.repeat indent "    " ++ Debug.toString item.id ++ ": " ++ MsgLike.format item.msg) ]

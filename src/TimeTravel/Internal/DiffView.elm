@@ -1,6 +1,6 @@
 module TimeTravel.Internal.DiffView exposing (view)
 
-import TimeTravel.Internal.Styles as S
+import TimeTravel.Internal.Styles as S exposing (styles)
 import TimeTravel.Internal.Parser.AST exposing (ASTX)
 
 import Html exposing (..)
@@ -38,7 +38,7 @@ view changes =
         ) (reduceLines changes)
   in
     div
-      [ style S.diffView ]
+      (styles S.diffView)
       linesView
 
 
@@ -48,16 +48,16 @@ reduceLines list =
     additionalLines = 2
 
     (tmp, result) =
-      List.foldr (\line (tmp, result) ->
+      List.foldr (\line (tmp_, result_) ->
         case line of
           NoChange s ->
-            ((Normal s) :: tmp, result)
+            ((Normal s) :: tmp_, result_)
 
           Removed s ->
-            tmpToResult additionalLines (Delete s) tmp result
+            tmpToResult additionalLines (Delete s) tmp_ result_
 
           Added s ->
-            tmpToResult additionalLines (Add s) tmp result
+            tmpToResult additionalLines (Add s) tmp_ result_
         ) ([], []) list
   in
     if result == [] then
@@ -81,19 +81,19 @@ tmpToResult additionalLines next tmp result =
 
 omittedLine : Html msg
 omittedLine =
-  div [ style S.omittedLine ] [ text "..." ]
+  div (styles S.omittedLine) [ text "..." ]
 
 
 deletedLine : String -> Html msg
 deletedLine s =
-  div [ style S.deletedLine ] [ text s ]
+  div (styles S.deletedLine) [ text s ]
 
 
 addedLine : String -> Html msg
 addedLine s =
-  div [ style S.addedLine ] [ text s ]
+  div (styles S.addedLine) [ text s ]
 
 
 normalLine : String -> Html msg
 normalLine s =
-  div [ style S.normalLine ] [ text s ]
+  div (styles S.normalLine) [ text s ]

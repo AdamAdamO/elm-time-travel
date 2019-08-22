@@ -29,10 +29,10 @@ view transformUserMsg transformDebuggerMsg userViewFunc model =
 
 
 userView : (model -> Html msg) -> Model model msg -> Html msg
-userView userView model =
+userView userView_ model =
   case selectedItem model of
     Just item ->
-      userView item.model
+      userView_ item.model
 
     Nothing ->
       text "Error: Unable to render"
@@ -49,7 +49,7 @@ normalDebugView model =
     []
     [ resyncView model.sync
     , div
-        [ style (S.debugView model.fixedToLeft) ]
+        (S.styles (S.debugView model.fixedToLeft))
         [ headerView model.fixedToLeft model.sync model.expand model.filter
         , msgListView
             model.filter
@@ -71,13 +71,17 @@ resyncView sync =
   if sync then
     text ""
   else
-    div [ style (S.resyncView sync), onMouseDown Resync ] []
+    div 
+      ([ onMouseDown Resync 
+      ] ++ S.styles (S.resyncView sync))
+      []
 
 
 headerView : Bool -> Bool -> Bool -> FilterOptions -> Html Msg
 headerView fixedToLeft sync expand filterOptions =
   div []
-  [ div [ style S.headerView ]
+  [ div 
+    (S.styles S.headerView)
     [ buttonView ToggleLayout (S.buttonView True) [ I.layout ]
     , buttonView ToggleMinimize (S.buttonView True) [ I.minimize False ]
     , buttonView ToggleSync (S.buttonView False) [ I.sync sync ]
@@ -89,13 +93,16 @@ headerView fixedToLeft sync expand filterOptions =
 
 buttonView : msg -> List (String, String) -> List (Html msg) -> Html msg
 buttonView onClickMsg buttonStyle inner =
-  hover S.buttonHover div [ style buttonStyle, onClick onClickMsg ] inner
+  hover S.buttonHover div 
+    ([ onClick onClickMsg     
+    ] ++ S.styles buttonStyle)
+    inner
 
 
 filterView : Bool -> FilterOptions -> Html Msg
 filterView visible filterOptions =
   div
-    [ style (S.filterView visible) ]
+    (S.styles (S.filterView visible))
     (List.map filterItemView (List.sortBy Tuple.first filterOptions))
 
 
@@ -133,29 +140,32 @@ modelDetailView fixedToLeft modelFilter expandedTree lazyModelAst userModel =
 
         trees =
           List.map
-            (\(id, ast) ->
+            (\(id, ast_) ->
                 modelDetailTreeEach
                   expandedTree
                   (if modelFilter /= "" then Just id else Nothing)
-                  ast
+                  ast_
             )
             filteredAst
 
       in
-        div [ style (S.modelDetailView fixedToLeft) ] (filterInput :: trees)
+        div 
+          (S.styles (S.modelDetailView fixedToLeft))
+          (filterInput :: trees)
 
     _ ->
-      div [ style S.modelView ] [ text (toString userModel) ]
+      div 
+        (S.styles S.modelView)
+        [ text (Debug.toString userModel) ]
 
 
 modelFilterInput : String -> Html Msg
 modelFilterInput modelFilter =
   input
-    [ style S.modelFilterInput
-    , placeholder "Filter by property"
+    ([ placeholder "Filter by property"
     , value modelFilter
     , onInput InputModelFilter
-    ]
+    ] ++ S.styles S.modelFilterInput)
     []
 
 
@@ -171,7 +181,7 @@ modelDetailTreeEach expandedTree maybeId ast =
           text ""
   in
     div
-      [ style S.modelDetailTreeEach ]
+      (S.styles S.modelDetailTreeEach)
       ( idView ::
         Formatter.formatAsHtml
           SelectModelFilter
@@ -188,9 +198,8 @@ modelDetailTreeEachId id =
       hover
         S.modelDetailTreeEachIdHover
         span
-        [ style S.modelDetailTreeEachId
-        , onClick (SelectModelFilter id)
-        ]
+        ([ onClick (SelectModelFilter id)
+        ] ++ S.styles S.modelDetailTreeEachId)
         [ text id
         ]
 
@@ -198,29 +207,28 @@ modelDetailTreeEachId id =
       hover
         S.modelDetailTreeEachIdWatchHover
         span
-        [ style S.modelDetailTreeEachIdWatch
-        , onClick (SelectModelFilterWatch id)
-        ]
+        ([ onClick (SelectModelFilterWatch id)
+        ] ++ S.styles S.modelDetailTreeEachIdWatch)
         [ text "watch"
         ]
   in
     div
       []
       [ filterLink
-      , span [ style S.modelDetailTreeEachIdWatch ] [ text " (" ]
+      , span (S.styles S.modelDetailTreeEachIdWatch) [ text " (" ]
       , watchLink
-      , span [ style S.modelDetailTreeEachIdWatch ] [ text ")" ]
+      , span (S.styles S.modelDetailTreeEachIdWatch) [ text ")" ]
       ]
 
 
 msgListView : FilterOptions -> Maybe Id -> List (HistoryItem model msg) -> Html Msg -> Html Msg -> Html Msg
-msgListView filterOptions selectedMsg items watchView detailView =
+msgListView filterOptions selectedMsg items watchView_ detailView_ =
   div
     []
-    [ detailView
-    , watchView
+    [ detailView_
+    , watchView_
     , Keyed.node "div"
-        [ style S.msgListView ]
+        (S.styles S.msgListView)
         ( filterMapUntilLimit 60 (msgView filterOptions selectedMsg) items )
     ]
 
@@ -232,8 +240,8 @@ watchView model =
       let
         treeView =
           case AST.filterByExactId id ast of
-            Just ast ->
-              modelDetailTreeEach model.expandedTree Nothing ast
+            Just ast_ ->
+              modelDetailTreeEach model.expandedTree Nothing ast_
 
             Nothing ->
               text ""
@@ -242,14 +250,13 @@ watchView model =
           hover
             S.stopWatchingButtonHover
             div
-            [ style S.stopWatchingButton
-            , onClick StopWatching
-            ]
+            ([ onClick StopWatching
+            ] ++ S.styles S.stopWatchingButton)
             [ I.stopWatching ]
       in
         div
-          [ style S.watchView ]
-          [ div [ style S.watchViewHeader ] [ text ("Watching " ++ id) ]
+          (S.styles S.watchView)
+          [ div (S.styles S.watchViewHeader) [ text ("Watching " ++ id) ]
           , treeView
           , stopWatchingButton
           ]
@@ -273,21 +280,20 @@ msgView filterOptions selectedMsg { id, msg, causedBy } =
       msg == Init ||
         case String.words str of
           tag :: _ ->
-            List.any (\(name, visible) -> tag == name && visible) filterOptions
+            List.any (\(name, visible_) -> tag == name && visible_) filterOptions
           _ ->
             False
   in
     if visible then
       Just (
-        toString id
+        String.fromInt id
       , hover
           (S.msgViewHover selected)
           div
-          [ style (S.msgView selected)
-          , onClick (SelectMsg id)
-          , title (toString id ++ ": " ++ str)
-          ]
-          [ text (toString id ++ ": " ++ str) ]
+          ([ onClick (SelectMsg id)
+          , title (String.fromInt id ++ ": " ++ str)
+          ] ++ S.styles (S.msgView selected))
+          [ text (String.fromInt id ++ ": " ++ str) ]
       )
     else
       Nothing
@@ -339,7 +345,7 @@ detailView model =
         case selectedMsgAst model of
           Just ast ->
             div
-              [ style S.detailedMsgView ]
+              (S.styles S.detailedMsgView)
               [ text (Formatter.formatAsString (Formatter.makeModel ast)) ]
 
           Nothing ->
@@ -347,7 +353,7 @@ detailView model =
 
       head =
         div
-          [ style S.detailViewHead ]
+          (S.styles S.detailViewHead)
           [ detailTab (S.detailTabModel model.fixedToLeft model.showModelDetail) (ToggleModelDetail True) "Model"
           , detailTab (S.detailTabDiff model.fixedToLeft (not model.showModelDetail)) (ToggleModelDetail False) "Messages and Diff"
           ]
@@ -373,7 +379,7 @@ detailView model =
 
     in
       div
-        [ style (S.detailView model.fixedToLeft True) ]
+        (S.styles (S.detailView model.fixedToLeft True))
         ( head :: body )
   else
     text ""
@@ -381,4 +387,7 @@ detailView model =
 
 detailTab : List (String, String) -> msg -> String -> Html msg
 detailTab styles msg name =
-  hover S.detailTabHover div [ style styles, onClick msg ] [ text name ]
+  hover S.detailTabHover div 
+    ([ onClick msg 
+    ] ++ S.styles styles)
+    [ text name ]

@@ -142,9 +142,9 @@ updateOnIncomingUserMsg transformMsg update (causedBy, msg) model =
     megLike = Message msg
 
     nextItem = newItem model.msgId megLike causedBy newRawUserModel
-  in
-    ( { model |
-        filter = updateFilter megLike model.filter
+
+    newModel = { model 
+      | filter = updateFilter megLike model.filter
       , msgId = model.msgId + 1
       , future =
           if not model.sync then
@@ -157,9 +157,11 @@ updateOnIncomingUserMsg transformMsg update (causedBy, msg) model =
           else
             model.history
       } |> selectFirstIfSync |> updateLazyAstForWatch
-    )
-    ! [ Cmd.map transformMsg (Cmd.map ((,) model.msgId) userCmd)
+    cmds = 
+      [ Cmd.map transformMsg (Cmd.map (createTuple model.msgId) userCmd)
       ]
+  in
+    (newModel , Cmd.batch cmds)
 
 
 updateFilter : MsgLike msg -> FilterOptions -> FilterOptions
@@ -167,7 +169,7 @@ updateFilter msgLike filterOptions =
   let
     str =
       case msgLike of
-        Message msg -> toString msg
+        Message msg -> Debug.toString msg
         Init -> "" -- doesn't count as a filter
   in
     case String.words str of
@@ -242,7 +244,7 @@ updateLazyMsgAst item =
       if item.lazyMsgAst == Nothing then
         case item.msg of
           Message msg ->
-            Just (Result.map (AST.attachId "@") <| Parser.parse (toString msg))
+            Just (Result.map (AST.attachId "@") <| Parser.parse (Debug.toString msg))
 
           _ ->
             Just (Err "")
@@ -256,7 +258,7 @@ updateLazyModelAst item =
   { item |
     lazyModelAst =
       if item.lazyModelAst == Nothing then
-        Just (Result.map (AST.attachId "@") <| Parser.parse (toString item.model))
+        Just (Result.map (AST.attachId "@") <| Parser.parse (Debug.toString item.model))
       else
         item.lazyModelAst
   }
@@ -391,20 +393,27 @@ msgRootOf id history =
   case Nel.find (\item -> item.id == id) history of
     Just item ->
       case item.causedBy of
-        Just id -> msgRootOf id history
+        Just id_ -> msgRootOf id_ history
         Nothing -> Just item
 
     Nothing ->
       Nothing
 
+createTuple: a -> b -> (a, b)
+createTuple a b =
+  (a, b)
 
 settingsDecoder : Decoder Settings
 settingsDecoder =
   Decode.map2
     Settings
     (field "fixedToLeft" Decode.bool)
-    (field "filter" <| Decode.list (Decode.map2 (,) (Decode.index 0 Decode.string) (Decode.index 1 Decode.bool)))
+    (field "filter" <| Decode.list (Decode.map2 createTuple (Decode.index 0 Decode.string) (Decode.index 1 Decode.bool)))
 
+
+encodeTuple : (a -> Encode.Value) -> (b -> Encode.Value) -> ( a, b ) -> Encode.Value
+encodeTuple aEncoder bEncoder ( a, b ) =
+    Encode.list identity [ aEncoder a, bEncoder b ]
 
 encodeSetting : Settings -> String
 encodeSetting settings =
@@ -412,10 +421,10 @@ encodeSetting settings =
     Encode.object
       [ ("fixedToLeft", Encode.bool settings.fixedToLeft)
       , ("filter"
-        , Encode.list <|
-            List.map
-              (\(key, value) -> Encode.list [ Encode.string key, Encode.bool value] )
-              settings.filter
+        , Encode.list identity
+            (List.map
+              (encodeTuple Encode.string Encode.bool)
+              settings.filter)
         )
       ]
 
@@ -431,7 +440,7 @@ saveSetting save model =
     )
 
 
-decodeSettings : String -> Result String Settings
+decodeSettings : String -> Result Decode.Error Settings
 decodeSettings =
   Decode.decodeString settingsDecoder
 
