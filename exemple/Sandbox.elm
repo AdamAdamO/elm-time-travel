@@ -1,3 +1,5 @@
+module Sandbox exposing (main)
+
 import Browser
 import Html exposing (Html, button, div, text, input)
 import Html.Events exposing (onClick, onInput)

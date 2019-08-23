@@ -1,5 +1,7 @@
 module TimeTravel.Browser exposing
   ( sandbox
+  , element
+  , document
   --, program
   -- , programWithOptions
 --  , programWithFlags
@@ -37,6 +39,14 @@ type alias OptionsWithFlags flags model msg =
   , update : msg -> model -> (model, Cmd msg)
   , subscriptions : model -> Sub msg
   }
+
+type alias OptionsWithDocument flags model msg =
+  { init : flags -> (model, Cmd msg)
+  , view : model -> Browser.Document msg
+  , update : msg -> model -> (model, Cmd msg)
+  , subscriptions : model -> Sub msg
+  }
+
 
 type alias OutgoingMsg = Model.OutgoingMsg
 type alias IncomingMsg = Model.IncomingMsg
@@ -89,6 +99,25 @@ element stuff =
     Browser.element (wrap options stuff)
 
 
+{-| See [Html.programWithFlags](http://package.elm-lang.org/packages/elm-lang/html/latest/Html#programWithFlags)
+-}
+document :
+  { init : flags -> (model, Cmd msg)
+  , view : model -> Browser.Document msg
+  , update : msg -> model -> (model, Cmd msg)
+  , subscriptions : model -> Sub msg
+  }
+  -> Program flags (Model model msg) (Msg msg)
+document stuff =
+  let
+    options = 
+      { outgoingMsg = always Cmd.none
+      , incomingMsg = always Sub.none
+      }
+  in    
+    Browser.document (wrapDocument options stuff)
+
+
 wrap :
   { outgoingMsg : OutgoingMsg -> Cmd Never
   , incomingMsg : (IncomingMsg -> (Msg msg)) -> Sub (Msg msg)
@@ -124,6 +153,59 @@ wrap { outgoingMsg, incomingMsg } { init, view, update, subscriptions } =
 
     view_ model =
       View.view (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
+
+    subscriptions_ model =
+      let
+        item = Nel.head model.history
+      in
+        Sub.batch
+          [ Sub.map (\c -> UserMsg (Nothing, c)) (subscriptions item.model)
+          , incomingMsg (DebuggerMsg << Receive)
+          ]
+
+  in
+    { init = init_
+    , update = update_
+    , view = view_
+    , subscriptions = subscriptions_
+    }
+
+
+wrapDocument :
+  { outgoingMsg : OutgoingMsg -> Cmd Never
+  , incomingMsg : (IncomingMsg -> (Msg msg)) -> Sub (Msg msg)
+  }
+  -> OptionsWithDocument flags model msg
+  -> OptionsWithDocument flags (Model model msg) (Msg msg)
+wrapDocument { outgoingMsg, incomingMsg } { init, view, update, subscriptions } =
+  let
+    init_ flags =
+      let
+        (model, cmd) = init flags
+      in
+        (Model.init model, Cmd.batch [ Cmd.map (\msg -> UserMsg (Just 0, msg)) cmd ])
+
+    update_ msg model =
+      case msg of
+        UserMsg msgWithId ->
+          let
+            (m, c1) =
+              updateOnIncomingUserMsg (\(id, msg_) -> UserMsg (Just id, msg_)) update msgWithId model
+
+            (m_, c2) =
+              Update.updateAfterUserMsg outgoingMsg m
+          in
+            (m_, Cmd.batch [ c1, Cmd.map DebuggerMsg c2 ])
+
+        DebuggerMsg msg_ ->
+          let
+            (m, c) =
+              Update.update outgoingMsg msg_ model
+          in
+            (m, Cmd.batch [ Cmd.map DebuggerMsg c ])
+
+    view_ model =
+      View.document (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
 
     subscriptions_ model =
       let

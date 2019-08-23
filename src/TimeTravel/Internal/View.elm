@@ -1,4 +1,4 @@
-module TimeTravel.Internal.View exposing (view)
+module TimeTravel.Internal.View exposing (view, document)
 
 import TimeTravel.Internal.Model exposing (..)
 import TimeTravel.Internal.MsgLike as MsgLike exposing (MsgLike(..))
@@ -17,7 +17,7 @@ import Html.Keyed as Keyed
 
 import Set exposing (Set)
 import InlineHover exposing (hover)
-
+import Browser exposing (Document)
 
 view : (msg -> a) -> (Msg -> a) -> (model -> Html msg) -> Model model msg -> Html a
 view transformUserMsg transformDebuggerMsg userViewFunc model =
@@ -26,6 +26,17 @@ view transformUserMsg transformDebuggerMsg userViewFunc model =
     [ Html.map transformUserMsg (userView userViewFunc model)
     , Html.map transformDebuggerMsg (debugView model)
     ]
+
+document : (msg -> a) -> (Msg -> a) -> (model -> Document msg) -> Model model msg -> Document a
+document transformUserMsg transformDebuggerMsg userDocumentFunc model =
+  let
+    document_ = userDocument userDocumentFunc model
+    body_ = List.map (Html.map transformUserMsg) document_.body
+    debug_ = [ Html.map transformDebuggerMsg (debugView model) ]
+  in
+    { title=document_.title
+    , body = body_ ++ debug_
+    }
 
 
 userView : (model -> Html msg) -> Model model msg -> Html msg
@@ -36,6 +47,17 @@ userView userView_ model =
 
     Nothing ->
       text "Error: Unable to render"
+
+userDocument : (model -> Document msg) -> Model model msg -> Document msg
+userDocument userDocument_ model =
+  case selectedItem model of
+    Just item ->
+      userDocument_ item.model
+
+    Nothing -> 
+      { title = "Error: Unable to render" 
+      , body = [ text "Error: Unable to render" ]
+      }
 
 
 debugView : Model model msg -> Html Msg
