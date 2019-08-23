@@ -3,19 +3,13 @@ module TimeTravel.Browser exposing
   , element
   , document
   , application
-  --, program
-  -- , programWithOptions
---  , programWithFlags
-  -- , programWithFlagsWithOptions
-  -- , OutgoingMsg
-  -- , IncomingMsg
   )
 
 
-{-| Each functions in this module has the same interface as [Html.App](http://package.elm-lang.org/packages/elm-lang/html/latest/Html)
+{-| Each functions in this module has the same interface as [Browser.App](https://package.elm-lang.org/packages/elm/browser/latest/Browser)
 
 # Start your Program
-@docs beginnerProgram, program, programWithFlags
+@docs sandbox, element, document, application
 
 -}
 
@@ -26,7 +20,7 @@ import TimeTravel.Internal.View as View
 import TimeTravel.Internal.Util.Nel as Nel
 
 import Html exposing (Html, div, text)
-import Browser 
+import Browser
 import Browser.Navigation exposing (Key)
 import Url
 
@@ -64,7 +58,7 @@ type alias OutgoingMsg = Model.OutgoingMsg
 type alias IncomingMsg = Model.IncomingMsg
 
 
-{-| See [Html.beginnerProgram](http://package.elm-lang.org/packages/elm-lang/html/latest/Html#beginnerProgram)
+{-| See [Browser.sandbox](https://package.elm-lang.org/packages/elm/browser/latest/Browser#sandbox)
 -}
 sandbox :
   { init : model
@@ -92,7 +86,7 @@ sandbox { init, view, update } =
       }
 
 
-{-| See [Html.programWithFlags](http://package.elm-lang.org/packages/elm-lang/html/latest/Html#programWithFlags)
+{-| See [Browser.element](https://package.elm-lang.org/packages/elm/browser/latest/Browser#element)
 -}
 element :
   { init : flags -> (model, Cmd msg)
@@ -111,7 +105,7 @@ element stuff =
     Browser.element (wrap options stuff)
 
 
-{-| See [Html.programWithFlags](http://package.elm-lang.org/packages/elm-lang/html/latest/Html#programWithFlags)
+{-| See [Browser.document](https://package.elm-lang.org/packages/elm/browser/latest/Browser#document)
 -}
 document :
   { init : flags -> (model, Cmd msg)
@@ -130,7 +124,7 @@ document stuff =
     Browser.document (wrapDocument options stuff)
 
 
-{-| See [Html.programWithFlags](http://package.elm-lang.org/packages/elm-lang/html/latest/Html#programWithFlags)
+{-| See [Browser.application](https://package.elm-lang.org/packages/elm/browser/latest/Browser#application)
 -}
 application :
   { init : flags -> Url.Url -> Key -> (model, Cmd msg)
@@ -160,41 +154,16 @@ wrap :
 wrap { outgoingMsg, incomingMsg } { init, view, update, subscriptions } =
   let
     init_ flags =
-      let
-        (model, cmd) = init flags
-      in
-        (Model.init model, Cmd.batch [ Cmd.map (\msg -> UserMsg (Just 0, msg)) cmd ])
+      wrapInit (init flags)
 
     update_ msg model =
-      case msg of
-        UserMsg msgWithId ->
-          let
-            (m, c1) =
-              updateOnIncomingUserMsg (\(id, msg_) -> UserMsg (Just id, msg_)) update msgWithId model
-
-            (m_, c2) =
-              Update.updateAfterUserMsg outgoingMsg m
-          in
-            (m_, Cmd.batch [ c1, Cmd.map DebuggerMsg c2 ])
-
-        DebuggerMsg msg_ ->
-          let
-            (m, c) =
-              Update.update outgoingMsg msg_ model
-          in
-            (m, Cmd.batch [ Cmd.map DebuggerMsg c ])
+      wrapUpdate update outgoingMsg msg model
 
     view_ model =
       View.view (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
 
     subscriptions_ model =
-      let
-        item = Nel.head model.history
-      in
-        Sub.batch
-          [ Sub.map (\c -> UserMsg (Nothing, c)) (subscriptions item.model)
-          , incomingMsg (DebuggerMsg << Receive)
-          ]
+      wrapSubscriptions subscriptions incomingMsg model
 
   in
     { init = init_
@@ -213,41 +182,16 @@ wrapDocument :
 wrapDocument { outgoingMsg, incomingMsg } { init, view, update, subscriptions } =
   let
     init_ flags =
-      let
-        (model, cmd) = init flags
-      in
-        (Model.init model, Cmd.batch [ Cmd.map (\msg -> UserMsg (Just 0, msg)) cmd ])
+      wrapInit (init flags)
 
     update_ msg model =
-      case msg of
-        UserMsg msgWithId ->
-          let
-            (m, c1) =
-              updateOnIncomingUserMsg (\(id, msg_) -> UserMsg (Just id, msg_)) update msgWithId model
-
-            (m_, c2) =
-              Update.updateAfterUserMsg outgoingMsg m
-          in
-            (m_, Cmd.batch [ c1, Cmd.map DebuggerMsg c2 ])
-
-        DebuggerMsg msg_ ->
-          let
-            (m, c) =
-              Update.update outgoingMsg msg_ model
-          in
-            (m, Cmd.batch [ Cmd.map DebuggerMsg c ])
+      wrapUpdate update outgoingMsg msg model
 
     view_ model =
       View.document (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
 
     subscriptions_ model =
-      let
-        item = Nel.head model.history
-      in
-        Sub.batch
-          [ Sub.map (\c -> UserMsg (Nothing, c)) (subscriptions item.model)
-          , incomingMsg (DebuggerMsg << Receive)
-          ]
+      wrapSubscriptions subscriptions incomingMsg model
 
   in
     { init = init_
@@ -266,12 +210,36 @@ wrapApplication :
 wrapApplication { outgoingMsg, incomingMsg } { init, view, update, subscriptions, onUrlRequest, onUrlChange } =
   let
     init_ flags url key =
-      let
-        (model, cmd) = init flags url key
-      in
-        (Model.init model, Cmd.batch [ Cmd.map (\msg -> UserMsg (Just 0, msg)) cmd ])
+      wrapInit (init flags url key)
 
     update_ msg model =
+      wrapUpdate update outgoingMsg msg model
+
+    view_ model =
+      View.document (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
+
+    subscriptions_ model =
+      wrapSubscriptions subscriptions incomingMsg model
+      
+    onUrlRequest_ url = 
+      UserMsg (Nothing, onUrlRequest url)
+
+    onUrlChange_ url = 
+      UserMsg (Nothing, onUrlChange url)
+
+  in
+    { init = init_
+    , update = update_
+    , view = view_
+    , subscriptions = subscriptions_
+    , onUrlRequest = onUrlRequest_
+    , onUrlChange = onUrlChange_
+    }
+
+wrapInit (model, cmd) =  
+  (Model.init model, Cmd.batch [ Cmd.map (\msg -> UserMsg (Just 0, msg)) cmd ])
+
+wrapUpdate update outgoingMsg msg model =
       case msg of
         UserMsg msgWithId ->
           let
@@ -290,29 +258,12 @@ wrapApplication { outgoingMsg, incomingMsg } { init, view, update, subscriptions
           in
             (m, Cmd.batch [ Cmd.map DebuggerMsg c ])
 
-    view_ model =
-      View.document (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
 
-    subscriptions_ model =
-      let
-        item = Nel.head model.history
-      in
-        Sub.batch
-          [ Sub.map (\c -> UserMsg (Nothing, c)) (subscriptions item.model)
-          , incomingMsg (DebuggerMsg << Receive)
-          ]
-
-    onUrlRequest_ url = 
-      UserMsg (Nothing, onUrlRequest url)
-
-    onUrlChange_ url = 
-      UserMsg (Nothing, onUrlChange url)
-
+wrapSubscriptions subscriptions incomingMsg model =
+  let
+    item = Nel.head model.history
   in
-    { init = init_
-    , update = update_
-    , view = view_
-    , subscriptions = subscriptions_
-    , onUrlRequest = onUrlRequest_
-    , onUrlChange = onUrlChange_
-    }
+    Sub.batch
+      [ Sub.map (\c -> UserMsg (Nothing, c)) (subscriptions item.model)
+      , incomingMsg (DebuggerMsg << Receive)
+      ]

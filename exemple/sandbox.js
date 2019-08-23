@@ -5136,9 +5136,6 @@ var author$project$TimeTravel$Browser$DebuggerMsg = function (a) {
 var author$project$TimeTravel$Browser$UserMsg = function (a) {
 	return {$: 'UserMsg', a: a};
 };
-var author$project$TimeTravel$Internal$Model$Receive = function (a) {
-	return {$: 'Receive', a: a};
-};
 var author$project$TimeTravel$Internal$Model$newItem = F4(
 	function (id, msg, causedBy, model) {
 		return {causedBy: causedBy, id: id, lazyDiff: elm$core$Maybe$Nothing, lazyModelAst: elm$core$Maybe$Nothing, lazyMsgAst: elm$core$Maybe$Nothing, model: model, msg: msg};
@@ -5178,15 +5175,63 @@ var author$project$TimeTravel$Internal$Model$init = function (model) {
 		watch: elm$core$Maybe$Nothing
 	};
 };
-var author$project$TimeTravel$Internal$Model$createTuple = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
-	});
+var elm$core$Platform$Cmd$batch = _Platform_batch;
+var elm$core$Platform$Cmd$map = _Platform_map;
+var author$project$TimeTravel$Browser$wrapInit = function (_n0) {
+	var model = _n0.a;
+	var cmd = _n0.b;
+	return _Utils_Tuple2(
+		author$project$TimeTravel$Internal$Model$init(model),
+		elm$core$Platform$Cmd$batch(
+			_List_fromArray(
+				[
+					A2(
+					elm$core$Platform$Cmd$map,
+					function (msg) {
+						return author$project$TimeTravel$Browser$UserMsg(
+							_Utils_Tuple2(
+								elm$core$Maybe$Just(0),
+								msg));
+					},
+					cmd)
+				])));
+};
+var author$project$TimeTravel$Internal$Model$Receive = function (a) {
+	return {$: 'Receive', a: a};
+};
 var author$project$TimeTravel$Internal$Util$Nel$head = function (_n0) {
 	var head_ = _n0.a;
 	var tail = _n0.b;
 	return head_;
 };
+var elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var elm$core$Platform$Sub$batch = _Platform_batch;
+var elm$core$Platform$Sub$map = _Platform_map;
+var author$project$TimeTravel$Browser$wrapSubscriptions = F3(
+	function (subscriptions, incomingMsg, model) {
+		var item = author$project$TimeTravel$Internal$Util$Nel$head(model.history);
+		return elm$core$Platform$Sub$batch(
+			_List_fromArray(
+				[
+					A2(
+					elm$core$Platform$Sub$map,
+					function (c) {
+						return author$project$TimeTravel$Browser$UserMsg(
+							_Utils_Tuple2(elm$core$Maybe$Nothing, c));
+					},
+					subscriptions(item.model)),
+					incomingMsg(
+					A2(elm$core$Basics$composeL, author$project$TimeTravel$Browser$DebuggerMsg, author$project$TimeTravel$Internal$Model$Receive))
+				]));
+	});
+var author$project$TimeTravel$Internal$Model$createTuple = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
 var author$project$TimeTravel$Internal$Model$selectFirstIfSync = function (model) {
 	return model.sync ? _Utils_update(
 		model,
@@ -6050,8 +6095,6 @@ var author$project$TimeTravel$Internal$Util$Nel$cons = F2(
 			A2(elm$core$List$cons, h, t));
 	});
 var elm$core$Basics$not = _Basics_not;
-var elm$core$Platform$Cmd$batch = _Platform_batch;
-var elm$core$Platform$Cmd$map = _Platform_map;
 var author$project$TimeTravel$Internal$Model$updateOnIncomingUserMsg = F4(
 	function (transformMsg, update, _n0, model) {
 		var causedBy = _n0.a;
@@ -6239,11 +6282,6 @@ var author$project$TimeTravel$Internal$Model$updateLazyMsgAst = function (item) 
 			}()
 		});
 };
-var elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
 var author$project$TimeTravel$Internal$Model$updateLazyAst = function (model) {
 	var _n0 = model.selectedMsg;
 	if (_n0.$ === 'Just') {
@@ -7859,6 +7897,50 @@ var author$project$TimeTravel$Internal$Update$updateAfterUserMsg = F2(
 					[
 						A2(author$project$TimeTravel$Internal$Model$saveSetting, save, model)
 					])));
+	});
+var author$project$TimeTravel$Browser$wrapUpdate = F4(
+	function (update, outgoingMsg, msg, model) {
+		if (msg.$ === 'UserMsg') {
+			var msgWithId = msg.a;
+			var _n1 = A4(
+				author$project$TimeTravel$Internal$Model$updateOnIncomingUserMsg,
+				function (_n2) {
+					var id = _n2.a;
+					var msg_ = _n2.b;
+					return author$project$TimeTravel$Browser$UserMsg(
+						_Utils_Tuple2(
+							elm$core$Maybe$Just(id),
+							msg_));
+				},
+				update,
+				msgWithId,
+				model);
+			var m = _n1.a;
+			var c1 = _n1.b;
+			var _n3 = A2(author$project$TimeTravel$Internal$Update$updateAfterUserMsg, outgoingMsg, m);
+			var m_ = _n3.a;
+			var c2 = _n3.b;
+			return _Utils_Tuple2(
+				m_,
+				elm$core$Platform$Cmd$batch(
+					_List_fromArray(
+						[
+							c1,
+							A2(elm$core$Platform$Cmd$map, author$project$TimeTravel$Browser$DebuggerMsg, c2)
+						])));
+		} else {
+			var msg_ = msg.a;
+			var _n4 = A3(author$project$TimeTravel$Internal$Update$update, outgoingMsg, msg_, model);
+			var m = _n4.a;
+			var c = _n4.b;
+			return _Utils_Tuple2(
+				m,
+				elm$core$Platform$Cmd$batch(
+					_List_fromArray(
+						[
+							A2(elm$core$Platform$Cmd$map, author$project$TimeTravel$Browser$DebuggerMsg, c)
+						])));
+		}
 	});
 var avh4$elm_color$Color$toRgba = function (_n0) {
 	var r = _n0.a;
@@ -10029,8 +10111,6 @@ var author$project$TimeTravel$Internal$View$view = F4(
 					author$project$TimeTravel$Internal$View$debugView(model))
 				]));
 	});
-var elm$core$Platform$Sub$batch = _Platform_batch;
-var elm$core$Platform$Sub$map = _Platform_map;
 var author$project$TimeTravel$Browser$wrap = F2(
 	function (_n0, _n1) {
 		var outgoingMsg = _n0.outgoingMsg;
@@ -10052,83 +10132,14 @@ var author$project$TimeTravel$Browser$wrap = F2(
 		};
 		var update_ = F2(
 			function (msg, model) {
-				if (msg.$ === 'UserMsg') {
-					var msgWithId = msg.a;
-					var _n4 = A4(
-						author$project$TimeTravel$Internal$Model$updateOnIncomingUserMsg,
-						function (_n5) {
-							var id = _n5.a;
-							var msg_ = _n5.b;
-							return author$project$TimeTravel$Browser$UserMsg(
-								_Utils_Tuple2(
-									elm$core$Maybe$Just(id),
-									msg_));
-						},
-						update,
-						msgWithId,
-						model);
-					var m = _n4.a;
-					var c1 = _n4.b;
-					var _n6 = A2(author$project$TimeTravel$Internal$Update$updateAfterUserMsg, outgoingMsg, m);
-					var m_ = _n6.a;
-					var c2 = _n6.b;
-					return _Utils_Tuple2(
-						m_,
-						elm$core$Platform$Cmd$batch(
-							_List_fromArray(
-								[
-									c1,
-									A2(elm$core$Platform$Cmd$map, author$project$TimeTravel$Browser$DebuggerMsg, c2)
-								])));
-				} else {
-					var msg_ = msg.a;
-					var _n7 = A3(author$project$TimeTravel$Internal$Update$update, outgoingMsg, msg_, model);
-					var m = _n7.a;
-					var c = _n7.b;
-					return _Utils_Tuple2(
-						m,
-						elm$core$Platform$Cmd$batch(
-							_List_fromArray(
-								[
-									A2(elm$core$Platform$Cmd$map, author$project$TimeTravel$Browser$DebuggerMsg, c)
-								])));
-				}
+				return A4(author$project$TimeTravel$Browser$wrapUpdate, update, outgoingMsg, msg, model);
 			});
 		var subscriptions_ = function (model) {
-			var item = author$project$TimeTravel$Internal$Util$Nel$head(model.history);
-			return elm$core$Platform$Sub$batch(
-				_List_fromArray(
-					[
-						A2(
-						elm$core$Platform$Sub$map,
-						function (c) {
-							return author$project$TimeTravel$Browser$UserMsg(
-								_Utils_Tuple2(elm$core$Maybe$Nothing, c));
-						},
-						subscriptions(item.model)),
-						incomingMsg(
-						A2(elm$core$Basics$composeL, author$project$TimeTravel$Browser$DebuggerMsg, author$project$TimeTravel$Internal$Model$Receive))
-					]));
+			return A3(author$project$TimeTravel$Browser$wrapSubscriptions, subscriptions, incomingMsg, model);
 		};
 		var init_ = function (flags) {
-			var _n2 = init(flags);
-			var model = _n2.a;
-			var cmd = _n2.b;
-			return _Utils_Tuple2(
-				author$project$TimeTravel$Internal$Model$init(model),
-				elm$core$Platform$Cmd$batch(
-					_List_fromArray(
-						[
-							A2(
-							elm$core$Platform$Cmd$map,
-							function (msg) {
-								return author$project$TimeTravel$Browser$UserMsg(
-									_Utils_Tuple2(
-										elm$core$Maybe$Just(0),
-										msg));
-							},
-							cmd)
-						])));
+			return author$project$TimeTravel$Browser$wrapInit(
+				init(flags));
 		};
 		return {init: init_, subscriptions: subscriptions_, update: update_, view: view_};
 	});
