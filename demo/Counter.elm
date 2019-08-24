@@ -1,17 +1,21 @@
 import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
 
-import TimeTravel.Html as TimeTravel
+import TimeTravel.Browser as TimeTravel
 
 
 main =
-  TimeTravel.beginnerProgram { model = 0, view = view, update = update }
+  TimeTravel.sandbox 
+    { init = 0
+    , view = view
+    , update = update 
+    }
 
 
 view model =
   div []
     [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (toString model) ]
+    , div [] [ text (Debug.toString model) ]
     , button [ onClick Increment ] [ text "+" ]
     ]
 
