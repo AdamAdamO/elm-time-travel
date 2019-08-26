@@ -1,14 +1,14 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on)
-import Json.Decode as Json exposing (field)
-import Mouse exposing (Position)
+import Json.Decode as Decode exposing (field, Decoder)
+import Browser.Events as Browser
 
-import TimeTravel.Html as TimeTravel
+import TimeTravel.Browser as TimeTravel
 
 
 main =
-  TimeTravel.program
+  TimeTravel.element
     { init = init
     , view = view
     , update = update
@@ -18,6 +18,10 @@ main =
 
 -- MODEL
 
+type alias Position =
+  { x : Int
+  , y : Int
+  }
 
 type alias Model =
     { position : Position
@@ -31,8 +35,8 @@ type alias Drag =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : () -> ( Model, Cmd Msg )
+init flags =
   ( Model (Position 200 200) Nothing, Cmd.none )
 
 
@@ -75,14 +79,17 @@ subscriptions model =
       Sub.none
 
     Just _ ->
-      Sub.batch [ Mouse.moves DragAt, Mouse.ups DragEnd ]
+      Sub.batch 
+        [ Browser.onMouseMove (Decode.map DragAt decodePosition)
+        , Browser.onMouseUp (Decode.map DragEnd decodePosition)
+        ]
 
 
 
 -- VIEW
 
 
-(=>) = (,)
+--(=>) = (,)
 
 
 view : Model -> Html Msg
@@ -93,22 +100,19 @@ view model =
   in
     div
       [ onMouseDown
-      , style
-          [ "background-color" => "#3C8D2F"
-          , "cursor" => "move"
+      , style "background-color" "#3C8D2F"
+      , style "cursor" "move"
+      , style "width" "100px"
+      , style "height" "100px"
+      , style "border-radius" "4px"
+      , style "position" "absolute"
+      , style "left" (px realPosition.x)
+      , style "top" (px realPosition.y)
 
-          , "width" => "100px"
-          , "height" => "100px"
-          , "border-radius" => "4px"
-          , "position" => "absolute"
-          , "left" => px realPosition.x
-          , "top" => px realPosition.y
-
-          , "color" => "white"
-          , "display" => "flex"
-          , "align-items" => "center"
-          , "justify-content" => "center"
-          ]
+      , style "color" "white"
+      , style "display" "flex"
+      , style "align-items" "center"
+      , style "justify-content" "center"
       ]
       [ text "Drag Me!"
       ]
@@ -116,7 +120,7 @@ view model =
 
 px : Int -> String
 px number =
-  toString number ++ "px"
+  String.fromInt number ++ "px"
 
 
 getPosition : Model -> Position
@@ -133,4 +137,10 @@ getPosition {position, drag} =
 
 onMouseDown : Attribute Msg
 onMouseDown =
-  on "mousedown" (Json.map DragStart Mouse.position)
+  on "mousedown" (Decode.map DragStart decodePosition)
+
+decodePosition : Decode.Decoder Position
+decodePosition =
+  Decode.map2 Position
+    (Decode.field "pageX" Decode.int)
+    (Decode.field "pageY" Decode.int)

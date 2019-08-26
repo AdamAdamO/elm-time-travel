@@ -34,4 +34,4 @@ itemRow onSelect indent selectedMsg item =
     div
     ([ onClick (onSelect item.id)
     ] ++ S.styles (S.msgTreeViewItemRow (selectedMsg == item.id)))
-    [ text (String.repeat indent "    " ++ Debug.toString item.id ++ ": " ++ MsgLike.format item.msg) ]
+    [ text (String.repeat indent "    " ++ String.fromInt item.id ++ ": " ++ MsgLike.format item.msg) ]

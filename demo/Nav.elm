@@ -1,17 +1,22 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Navigation
+import Browser
+import Browser.Navigation as Navigation
+import Url
 
-import TimeTravel.Navigation as TimeTravel
+import TimeTravel.Browser as TimeTravel
 
 
 main =
-  TimeTravel.program UrlChange
+  --TimeTravel.program UrlChange
+  TimeTravel.application
     { init = init
     , view = view
     , update = update
     , subscriptions = (\_ -> Sub.none)
+    , onUrlChange = UrlChange
+    , onUrlRequest = UrlRequest
     }
 
 
@@ -20,13 +25,14 @@ main =
 
 
 type alias Model =
-  { history : List Navigation.Location
+  { history : List Url.Url
+  , key: Navigation.Key
   }
 
 
-init : Navigation.Location -> ( Model, Cmd Msg )
-init location =
-  ( Model [ location ]
+init : () -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
+init flags url key =
+  ( Model [ url ] key
   , Cmd.none
   )
 
@@ -36,7 +42,8 @@ init location =
 
 
 type Msg
-  = UrlChange Navigation.Location
+  = UrlChange Url.Url
+  | UrlRequest Browser.UrlRequest
 
 
 {- We are just storing the location in our history in this example, but
@@ -51,20 +58,29 @@ update msg model =
       ( { model | history = location :: model.history }
       , Cmd.none
       )
+    UrlRequest urlRequest ->
+      case urlRequest of
+        Browser.Internal url ->
+          ( model, Navigation.pushUrl model.key (Url.toString url) )
+
+        Browser.External href ->
+          ( model, Navigation.load href )
 
 
 
 -- VIEW
 
 
-view : Model -> Html msg
+view : Model -> Browser.Document msg
 view model =
-  div []
-    [ h1 [] [ text "Pages" ]
-    , ul [] (List.map viewLink [ "bears", "cats", "dogs", "elephants", "fish" ])
-    , h1 [] [ text "History" ]
-    , ul [] (List.map viewLocation model.history)
-    ]
+  { title = "Nav.elm"
+  , body =
+      [ h1 [] [ text "Pages" ]
+      , ul [] (List.map viewLink [ "bears", "cats", "dogs", "elephants", "fish" ])
+      , h1 [] [ text "History" ]
+      , ul [] (List.map viewLocation model.history)
+      ]
+  }
 
 
 viewLink : String -> Html msg
@@ -72,6 +88,6 @@ viewLink name =
   li [] [ a [ href ("#" ++ name) ] [ text name ] ]
 
 
-viewLocation : Navigation.Location -> Html msg
+viewLocation : Url.Url -> Html msg
 viewLocation location =
-  li [] [ text (location.pathname ++ location.hash) ]
+  li [] [ text (location.path ++ Maybe.withDefault "" location.fragment) ]

@@ -7,7 +7,7 @@ import Http
 import Json.Decode as Json
 import Task
 
-import TimeTravel.Html as TimeTravel
+import TimeTravel.Browser as TimeTravel
 
 import Dict exposing (Dict)
 import Process
@@ -19,7 +19,7 @@ import Process
 
 
 main =
-  TimeTravel.program
+  TimeTravel.element
   -- TimeTravel.programWithOptions
   --   { outgoingMsg = outgoing
   --   , incomingMsg = incoming
@@ -74,8 +74,8 @@ initTeam =
   }
 
 
-init : (Model, Cmd Msg)
-init =
+init : () -> (Model, Cmd Msg)
+init flags =
   ( { user = Nothing
     , team = initTeam
     , members = []
