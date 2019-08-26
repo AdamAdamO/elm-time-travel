@@ -32,9 +32,13 @@ type alias Model =
 
 init : () -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
-  ( Model [ url ] key
-  , Cmd.none
-  )
+  let
+    model = 
+      { history = [ url ]
+      , key = key
+      }
+  in
+    (model, Cmd.none)
 
 
 
@@ -46,10 +50,12 @@ type Msg
   | UrlRequest Browser.UrlRequest
 
 
-{- We are just storing the location in our history in this example, but
-normally, you would use a package like evancz/url-parser to parse the path
+{- We are just storing the url in our history in this example, but
+normally, you would use a package like Url.Parser to parse the path
 or hash into nicely structured Elm values.
-    <http://package.elm-lang.org/packages/evancz/url-parser/latest>
+    <https://package.elm-lang.org/packages/elm/browser/latest/Browser-Navigation>
+    <https://guide.elm-lang.org/webapps/navigation.html>
+    <https://guide.elm-lang.org/webapps/url_parsing.html>
 -}
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -58,6 +64,7 @@ update msg model =
       ( { model | history = location :: model.history }
       , Cmd.none
       )
+
     UrlRequest urlRequest ->
       case urlRequest of
         Browser.Internal url ->
@@ -90,4 +97,4 @@ viewLink name =
 
 viewLocation : Url.Url -> Html msg
 viewLocation location =
-  li [] [ text (location.path ++ Maybe.withDefault "" location.fragment) ]
+  li [] [ text (location.path ++ "#" ++ Maybe.withDefault "" location.fragment) ]
