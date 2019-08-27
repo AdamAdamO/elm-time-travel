@@ -1,4 +1,4 @@
-module InlineHover exposing (hover)
+module TimeTravel.Internal.InlineHover exposing (hover)
 
 {-| Wrap any elements defined in [Html](http://package.elm-lang.org/packages/elm-lang/html/1.0.0/Html)
 # Make Special Elements

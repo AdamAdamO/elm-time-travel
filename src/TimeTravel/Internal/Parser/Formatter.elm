@@ -7,8 +7,7 @@ import Html.Events exposing (..)
 
 import TimeTravel.Internal.Styles as S
 import TimeTravel.Internal.Parser.AST as AST exposing (..)
-
-import InlineHover exposing (hover)
+import TimeTravel.Internal.InlineHover exposing (hover)
 
 
 type alias Context =

@@ -8334,6 +8334,11 @@ var author$project$TimeTravel$Browser$wrapUpdate = F4(
 						])));
 		}
 	});
+var avh4$elm_color$Color$RgbaSpace = F4(
+	function (a, b, c, d) {
+		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
+	});
+var avh4$elm_color$Color$white = A4(avh4$elm_color$Color$RgbaSpace, 255 / 255, 255 / 255, 255 / 255, 1.0);
 var avh4$elm_color$Color$toRgba = function (_n0) {
 	var r = _n0.a;
 	var g = _n0.b;
@@ -8341,14 +8346,18 @@ var avh4$elm_color$Color$toRgba = function (_n0) {
 	var a = _n0.d;
 	return {alpha: a, blue: b, green: g, red: r};
 };
+var elm$core$Basics$round = _Basics_round;
 var elm$core$String$fromFloat = _String_fromNumber;
-var author$project$Material$Icons$Internal$toRgbaString = function (color) {
+var danmarcab$material_icons$Material$Icons$Internal$toRgbaString = function (color) {
 	var _n0 = avh4$elm_color$Color$toRgba(color);
 	var red = _n0.red;
 	var green = _n0.green;
 	var blue = _n0.blue;
 	var alpha = _n0.alpha;
-	return 'rgba(' + (elm$core$String$fromFloat(red) + (',' + (elm$core$String$fromFloat(green) + (',' + (elm$core$String$fromFloat(blue) + (',' + (elm$core$String$fromFloat(alpha) + ')')))))));
+	return 'rgba(' + (elm$core$String$fromInt(
+		elm$core$Basics$round(255 * red)) + (',' + (elm$core$String$fromInt(
+		elm$core$Basics$round(255 * green)) + (',' + (elm$core$String$fromInt(
+		elm$core$Basics$round(255 * blue)) + (',' + (elm$core$String$fromFloat(alpha) + ')')))))));
 };
 var elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var elm$svg$Svg$g = elm$svg$Svg$trustedNode('g');
@@ -8357,10 +8366,10 @@ var elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
 var elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
 var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
-var author$project$Material$Icons$Internal$icon = F4(
+var danmarcab$material_icons$Material$Icons$Internal$icon = F4(
 	function (viewBox, children, color, size) {
 		var stringSize = elm$core$String$fromInt(size);
-		var stringColor = author$project$Material$Icons$Internal$toRgbaString(color);
+		var stringColor = danmarcab$material_icons$Material$Icons$Internal$toRgbaString(color);
 		return A2(
 			elm$svg$Svg$svg,
 			_List_fromArray(
@@ -8382,8 +8391,8 @@ var author$project$Material$Icons$Internal$icon = F4(
 	});
 var elm$svg$Svg$path = elm$svg$Svg$trustedNode('path');
 var elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
-var author$project$Material$Icons$Content$add = A2(
-	author$project$Material$Icons$Internal$icon,
+var danmarcab$material_icons$Material$Icons$Content$add = A2(
+	danmarcab$material_icons$Material$Icons$Internal$icon,
 	'0 0 48 48',
 	_List_fromArray(
 		[
@@ -8395,8 +8404,8 @@ var author$project$Material$Icons$Content$add = A2(
 				]),
 			_List_Nil)
 		]));
-var author$project$Material$Icons$Content$remove = A2(
-	author$project$Material$Icons$Internal$icon,
+var danmarcab$material_icons$Material$Icons$Content$remove = A2(
+	danmarcab$material_icons$Material$Icons$Internal$icon,
 	'0 0 48 48',
 	_List_fromArray(
 		[
@@ -8408,14 +8417,9 @@ var author$project$Material$Icons$Content$remove = A2(
 				]),
 			_List_Nil)
 		]));
-var avh4$elm_color$Color$RgbaSpace = F4(
-	function (a, b, c, d) {
-		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
-	});
-var avh4$elm_color$Color$white = A4(avh4$elm_color$Color$RgbaSpace, 255 / 255, 255 / 255, 255 / 255, 1.0);
 var author$project$TimeTravel$Internal$Icons$minimize = function (minimized) {
 	return A2(
-		minimized ? author$project$Material$Icons$Content$add : author$project$Material$Icons$Content$remove,
+		minimized ? danmarcab$material_icons$Material$Icons$Content$add : danmarcab$material_icons$Material$Icons$Content$remove,
 		avh4$elm_color$Color$white,
 		24);
 };
@@ -8463,7 +8467,7 @@ var elm$core$Tuple$second = function (_n0) {
 	var y = _n0.b;
 	return y;
 };
-var author$project$InlineHover$toCamelCase = function (s) {
+var author$project$TimeTravel$Internal$InlineHover$toCamelCase = function (s) {
 	return elm$core$String$fromList(
 		elm$core$List$reverse(
 			A3(
@@ -8486,10 +8490,10 @@ var author$project$InlineHover$toCamelCase = function (s) {
 				_Utils_Tuple2(false, _List_Nil),
 				elm$core$String$toList(s)).b));
 };
-var author$project$InlineHover$enterEach = function (_n0) {
+var author$project$TimeTravel$Internal$InlineHover$enterEach = function (_n0) {
 	var key = _n0.a;
 	var value = _n0.b;
-	var keyCamel = author$project$InlineHover$toCamelCase(key);
+	var keyCamel = author$project$TimeTravel$Internal$InlineHover$toCamelCase(key);
 	var escapedValue = A2(
 		elm$core$Basics$composeL,
 		elm$core$String$join('\"'),
@@ -8503,7 +8507,7 @@ var elm$core$List$all = F2(
 			A2(elm$core$Basics$composeL, elm$core$Basics$not, isOkay),
 			list);
 	});
-var author$project$InlineHover$isValidKey = function (s) {
+var author$project$TimeTravel$Internal$InlineHover$isValidKey = function (s) {
 	return (s !== '') && (A2(
 		elm$core$List$any,
 		elm$core$Char$isLower,
@@ -8516,10 +8520,10 @@ var author$project$InlineHover$isValidKey = function (s) {
 		},
 		elm$core$String$toList(s)));
 };
-var author$project$InlineHover$leaveEach = function (_n0) {
+var author$project$TimeTravel$Internal$InlineHover$leaveEach = function (_n0) {
 	var key = _n0.a;
 	var value = _n0.b;
-	var keyCamel = author$project$InlineHover$toCamelCase(key);
+	var keyCamel = author$project$TimeTravel$Internal$InlineHover$toCamelCase(key);
 	return 'this.style.' + (keyCamel + ('=this.getAttribute(\'data-hover-' + (key + '\')||\'\';')));
 };
 var elm$core$List$filter = F2(
@@ -8541,14 +8545,14 @@ var elm$virtual_dom$VirtualDom$attribute = F2(
 			_VirtualDom_noJavaScriptOrHtmlUri(value));
 	});
 var elm$html$Html$Attributes$attribute = elm$virtual_dom$VirtualDom$attribute;
-var author$project$InlineHover$hover = F4(
+var author$project$TimeTravel$Internal$InlineHover$hover = F4(
 	function (styles, tag, attrs, children) {
 		var validStyles = A2(
 			elm$core$List$filter,
 			function (_n0) {
 				var k = _n0.a;
 				var v = _n0.b;
-				return author$project$InlineHover$isValidKey(k);
+				return author$project$TimeTravel$Internal$InlineHover$isValidKey(k);
 			},
 			styles);
 		var leave = A2(
@@ -8557,14 +8561,14 @@ var author$project$InlineHover$hover = F4(
 			A2(
 				elm$core$String$join,
 				';',
-				A2(elm$core$List$map, author$project$InlineHover$leaveEach, validStyles)));
+				A2(elm$core$List$map, author$project$TimeTravel$Internal$InlineHover$leaveEach, validStyles)));
 		var enter = A2(
 			elm$html$Html$Attributes$attribute,
 			'onmouseenter',
 			A2(
 				elm$core$String$join,
 				';',
-				A2(elm$core$List$map, author$project$InlineHover$enterEach, validStyles)));
+				A2(elm$core$List$map, author$project$TimeTravel$Internal$InlineHover$enterEach, validStyles)));
 		return A2(
 			tag,
 			A2(
@@ -8608,7 +8612,7 @@ var elm$html$Html$Events$onClick = function (msg) {
 var author$project$TimeTravel$Internal$View$buttonView = F3(
 	function (onClickMsg, buttonStyle, inner) {
 		return A4(
-			author$project$InlineHover$hover,
+			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$buttonHover,
 			elm$html$Html$div,
 			_Utils_ap(
@@ -9238,7 +9242,7 @@ var author$project$TimeTravel$Internal$Styles$msgTreeViewItemRowHover = function
 var author$project$TimeTravel$Internal$MsgTreeView$itemRow = F4(
 	function (onSelect, indent, selectedMsg, item) {
 		return A4(
-			author$project$InlineHover$hover,
+			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$msgTreeViewItemRowHover(
 				_Utils_eq(selectedMsg, item.id)),
 			elm$html$Html$div,
@@ -9254,7 +9258,7 @@ var author$project$TimeTravel$Internal$MsgTreeView$itemRow = F4(
 			_List_fromArray(
 				[
 					elm$html$Html$text(
-					A2(elm$core$String$repeat, indent, '    ') + (elm$core$Debug$toString(item.id) + (': ' + author$project$TimeTravel$Internal$MsgLike$format(item.msg))))
+					A2(elm$core$String$repeat, indent, '    ') + (elm$core$String$fromInt(item.id) + (': ' + author$project$TimeTravel$Internal$MsgLike$format(item.msg))))
 				]));
 	});
 var elm$core$List$append = F2(
@@ -9383,7 +9387,7 @@ var author$project$TimeTravel$Internal$Styles$detailTabHover = _List_fromArray(
 var author$project$TimeTravel$Internal$View$detailTab = F3(
 	function (styles, msg, name) {
 		return A4(
-			author$project$InlineHover$hover,
+			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$detailTabHover,
 			elm$html$Html$div,
 			_Utils_ap(
@@ -9621,7 +9625,7 @@ var author$project$TimeTravel$Internal$Parser$Formatter$formatLinkAsHtml = F3(
 		return _List_fromArray(
 			[
 				A4(
-				author$project$InlineHover$hover,
+				author$project$TimeTravel$Internal$InlineHover$hover,
 				author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLinkHover,
 				elm$html$Html$span,
 				_Utils_ap(
@@ -9746,7 +9750,7 @@ var author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdWatch = autho
 var author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdWatchHover = author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdHover;
 var author$project$TimeTravel$Internal$View$modelDetailTreeEachId = function (id) {
 	var watchLink = A4(
-		author$project$InlineHover$hover,
+		author$project$TimeTravel$Internal$InlineHover$hover,
 		author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdWatchHover,
 		elm$html$Html$span,
 		_Utils_ap(
@@ -9761,7 +9765,7 @@ var author$project$TimeTravel$Internal$View$modelDetailTreeEachId = function (id
 				elm$html$Html$text('watch')
 			]));
 	var filterLink = A4(
-		author$project$InlineHover$hover,
+		author$project$TimeTravel$Internal$InlineHover$hover,
 		author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdHover,
 		elm$html$Html$span,
 		_Utils_ap(
@@ -10022,8 +10026,8 @@ var author$project$TimeTravel$Internal$View$detailView = function (model) {
 		return elm$html$Html$text('');
 	}
 };
-var author$project$Material$Icons$Navigation$arrow_drop_down = A2(
-	author$project$Material$Icons$Internal$icon,
+var danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_down = A2(
+	danmarcab$material_icons$Material$Icons$Internal$icon,
 	'0 0 48 48',
 	_List_fromArray(
 		[
@@ -10035,8 +10039,8 @@ var author$project$Material$Icons$Navigation$arrow_drop_down = A2(
 				]),
 			_List_Nil)
 		]));
-var author$project$Material$Icons$Navigation$arrow_drop_up = A2(
-	author$project$Material$Icons$Internal$icon,
+var danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_up = A2(
+	danmarcab$material_icons$Material$Icons$Internal$icon,
 	'0 0 48 48',
 	_List_fromArray(
 		[
@@ -10050,12 +10054,12 @@ var author$project$Material$Icons$Navigation$arrow_drop_up = A2(
 		]));
 var author$project$TimeTravel$Internal$Icons$filterExpand = function (expanded) {
 	return A2(
-		expanded ? author$project$Material$Icons$Navigation$arrow_drop_up : author$project$Material$Icons$Navigation$arrow_drop_down,
+		expanded ? danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_up : danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_down,
 		avh4$elm_color$Color$white,
 		24);
 };
-var author$project$Material$Icons$Action$swap_horiz = A2(
-	author$project$Material$Icons$Internal$icon,
+var danmarcab$material_icons$Material$Icons$Action$swap_horiz = A2(
+	danmarcab$material_icons$Material$Icons$Internal$icon,
 	'0 0 48 48',
 	_List_fromArray(
 		[
@@ -10067,9 +10071,9 @@ var author$project$Material$Icons$Action$swap_horiz = A2(
 				]),
 			_List_Nil)
 		]));
-var author$project$TimeTravel$Internal$Icons$layout = A2(author$project$Material$Icons$Action$swap_horiz, avh4$elm_color$Color$white, 24);
-var author$project$Material$Icons$Av$pause = A2(
-	author$project$Material$Icons$Internal$icon,
+var author$project$TimeTravel$Internal$Icons$layout = A2(danmarcab$material_icons$Material$Icons$Action$swap_horiz, avh4$elm_color$Color$white, 24);
+var danmarcab$material_icons$Material$Icons$Av$pause = A2(
+	danmarcab$material_icons$Material$Icons$Internal$icon,
 	'0 0 48 48',
 	_List_fromArray(
 		[
@@ -10081,8 +10085,8 @@ var author$project$Material$Icons$Av$pause = A2(
 				]),
 			_List_Nil)
 		]));
-var author$project$Material$Icons$Av$play_arrow = A2(
-	author$project$Material$Icons$Internal$icon,
+var danmarcab$material_icons$Material$Icons$Av$play_arrow = A2(
+	danmarcab$material_icons$Material$Icons$Internal$icon,
 	'0 0 48 48',
 	_List_fromArray(
 		[
@@ -10096,7 +10100,7 @@ var author$project$Material$Icons$Av$play_arrow = A2(
 		]));
 var author$project$TimeTravel$Internal$Icons$sync = function (_synchronized) {
 	return A2(
-		_synchronized ? author$project$Material$Icons$Av$pause : author$project$Material$Icons$Av$play_arrow,
+		_synchronized ? danmarcab$material_icons$Material$Icons$Av$pause : danmarcab$material_icons$Material$Icons$Av$play_arrow,
 		avh4$elm_color$Color$white,
 		24);
 };
@@ -10329,7 +10333,7 @@ var author$project$TimeTravel$Internal$View$msgView = F3(
 			_Utils_Tuple2(
 				elm$core$String$fromInt(id),
 				A4(
-					author$project$InlineHover$hover,
+					author$project$TimeTravel$Internal$InlineHover$hover,
 					author$project$TimeTravel$Internal$Styles$msgViewHover(selected),
 					elm$html$Html$div,
 					_Utils_ap(
@@ -10411,8 +10415,9 @@ var author$project$TimeTravel$Internal$View$resyncView = function (sync) {
 				author$project$TimeTravel$Internal$Styles$resyncView(sync))),
 		_List_Nil);
 };
-var author$project$Material$Icons$Navigation$close = A2(
-	author$project$Material$Icons$Internal$icon,
+var avh4$elm_color$Color$gray = A4(avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
+var danmarcab$material_icons$Material$Icons$Navigation$close = A2(
+	danmarcab$material_icons$Material$Icons$Internal$icon,
 	'0 0 48 48',
 	_List_fromArray(
 		[
@@ -10424,8 +10429,7 @@ var author$project$Material$Icons$Navigation$close = A2(
 				]),
 			_List_Nil)
 		]));
-var avh4$elm_color$Color$gray = A4(avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
-var author$project$TimeTravel$Internal$Icons$stopWatching = A2(author$project$Material$Icons$Navigation$close, avh4$elm_color$Color$gray, 14);
+var author$project$TimeTravel$Internal$Icons$stopWatching = A2(danmarcab$material_icons$Material$Icons$Navigation$close, avh4$elm_color$Color$gray, 14);
 var author$project$TimeTravel$Internal$Model$StopWatching = {$: 'StopWatching'};
 var author$project$TimeTravel$Internal$Styles$stopWatchingButton = _List_fromArray(
 	[
@@ -10467,7 +10471,7 @@ var author$project$TimeTravel$Internal$View$watchView = function (model) {
 			}
 		}();
 		var stopWatchingButton = A4(
-			author$project$InlineHover$hover,
+			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$stopWatchingButtonHover,
 			elm$html$Html$div,
 			_Utils_ap(

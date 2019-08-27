@@ -9,6 +9,7 @@ import TimeTravel.Internal.MsgTreeView as MsgTreeView
 import TimeTravel.Internal.DiffView as DiffView
 import TimeTravel.Internal.Parser.Formatter as Formatter
 import TimeTravel.Internal.Parser.AST as AST exposing (ASTX)
+import TimeTravel.Internal.InlineHover exposing (hover)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -16,7 +17,6 @@ import Html.Events exposing (..)
 import Html.Keyed as Keyed
 
 import Set exposing (Set)
-import InlineHover exposing (hover)
 import Browser exposing (Document)
 
 view : (msg -> a) -> (Msg -> a) -> (model -> Html msg) -> Model model msg -> Html a

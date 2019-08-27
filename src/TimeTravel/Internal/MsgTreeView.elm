@@ -4,6 +4,7 @@ import TimeTravel.Internal.Styles as S
 import TimeTravel.Internal.Util.RTree exposing (RTree(..))
 import TimeTravel.Internal.Model exposing (HistoryItem, Id)
 import TimeTravel.Internal.MsgLike as MsgLike
+import TimeTravel.Internal.InlineHover exposing (hover)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -11,7 +12,6 @@ import Html.Events exposing (..)
 
 import Diff exposing (..)
 
-import InlineHover exposing (hover)
 
 
 view : (Id -> m) -> Id -> RTree (HistoryItem model msg) -> Html m
