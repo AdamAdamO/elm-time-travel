@@ -1,13 +1,10 @@
 module TimeTravel.Internal.DiffView exposing (view)
 
 import TimeTravel.Internal.Styles as S exposing (styles)
-import TimeTravel.Internal.Parser.AST exposing (ASTX)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, div, text)
 
-import Diff exposing (..)
+import Diff exposing (Change(..))
 
 
 type Line = Normal String | Delete String | Add String | Omit
@@ -51,7 +48,7 @@ reduceLines list =
       List.foldr (\line (tmp_, result_) ->
         case line of
           NoChange s ->
-            ((Normal s) :: tmp_, result_)
+            (Normal s :: tmp_, result_)
 
           Removed s ->
             tmpToResult additionalLines (Delete s) tmp_ result_

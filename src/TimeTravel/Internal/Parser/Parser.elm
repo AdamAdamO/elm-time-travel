@@ -1,11 +1,11 @@
 module TimeTravel.Internal.Parser.Parser exposing (..)
 
-
-import Char
-import Combine exposing (..)
-import Combine.Num exposing (int, float)
-import TimeTravel.Internal.Parser.AST exposing (..)
-import TimeTravel.Internal.Parser.Util exposing (..)
+import Combine exposing 
+  (Parser, map, between, lazy, or, regex, string, parens
+  , brackets, andMap, many, sepBy, braces
+  )
+import TimeTravel.Internal.Parser.AST exposing (AST(..))
+import TimeTravel.Internal.Parser.Util exposing (spaced, spaces, comma, equal)
 
 
 parse : String -> Result String AST

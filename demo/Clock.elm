@@ -1,5 +1,7 @@
+module Clock exposing (main)
+
 import Html exposing (Html)
-import Svg exposing (..)
+import Svg exposing (svg, circle, line)
 import Svg.Attributes exposing (..)
 import Time exposing (Posix)
 
@@ -23,7 +25,7 @@ type alias Model = Posix
 
 
 init : () -> (Model, Cmd Msg)
-init flags =
+init _ =
   (Time.millisToPosix 0, Cmd.none)
 
 

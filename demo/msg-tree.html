@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Main</title>
+  <title>MsgTree</title>
 </head>
 
 <body>
@@ -4458,7 +4458,7 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Main$initTeam = {id: '', name: ''};
+var author$project$MsgTree$initTeam = {id: '', name: ''};
 var elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
 var elm$core$Maybe$Nothing = {$: 'Nothing'};
@@ -4938,20 +4938,20 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 	});
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
-var author$project$Main$init = function (flags) {
+var author$project$MsgTree$init = function (_n0) {
 	return _Utils_Tuple2(
-		{err: _List_Nil, memberDetails: elm$core$Dict$empty, members: _List_Nil, selectedMember: elm$core$Maybe$Nothing, team: author$project$Main$initTeam, user: elm$core$Maybe$Nothing},
+		{err: _List_Nil, memberDetails: elm$core$Dict$empty, members: _List_Nil, selectedMember: elm$core$Maybe$Nothing, team: author$project$MsgTree$initTeam, user: elm$core$Maybe$Nothing},
 		elm$core$Platform$Cmd$none);
 };
 var elm$core$Platform$Sub$batch = _Platform_batch;
 var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
-var author$project$Main$subscriptions = function (model) {
+var author$project$MsgTree$subscriptions = function (model) {
 	return elm$core$Platform$Sub$none;
 };
-var author$project$Main$Error = function (a) {
+var author$project$MsgTree$Error = function (a) {
 	return {$: 'Error', a: a};
 };
-var author$project$Main$MemberDetailLoaded = function (a) {
+var author$project$MsgTree$MemberDetailLoaded = function (a) {
 	return {$: 'MemberDetailLoaded', a: a};
 };
 var elm$core$Process$sleep = _Process_sleep;
@@ -5106,7 +5106,7 @@ var elm$core$Task$perform = F2(
 			elm$core$Task$Perform(
 				A2(elm$core$Task$map, toMessage, task)));
 	});
-var author$project$Main$dummyHttp = F2(
+var author$project$MsgTree$dummyHttp = F2(
 	function (sleepTime, msg) {
 		return A2(
 			elm$core$Task$perform,
@@ -5115,48 +5115,48 @@ var author$project$Main$dummyHttp = F2(
 			},
 			elm$core$Process$sleep(sleepTime));
 	});
-var author$project$Main$getMemberDetail = function (id) {
+var author$project$MsgTree$getMemberDetail = function (id) {
 	return (id === 'Alice') ? A2(
-		author$project$Main$dummyHttp,
+		author$project$MsgTree$dummyHttp,
 		40,
-		author$project$Main$MemberDetailLoaded(
+		author$project$MsgTree$MemberDetailLoaded(
 			{id: 'Alice', mail: 'alice@xxx.com', name: 'Alice', tel: '0156'})) : ((id === 'Bob') ? A2(
-		author$project$Main$dummyHttp,
+		author$project$MsgTree$dummyHttp,
 		60,
-		author$project$Main$MemberDetailLoaded(
+		author$project$MsgTree$MemberDetailLoaded(
 			{id: 'Bob', mail: 'bob@xxx.com', name: 'Bob', tel: '5136'})) : ((id === 'Chuck') ? A2(
-		author$project$Main$dummyHttp,
+		author$project$MsgTree$dummyHttp,
 		70,
-		author$project$Main$Error('Not Found')) : elm$core$Platform$Cmd$none));
+		author$project$MsgTree$Error('Not Found')) : elm$core$Platform$Cmd$none));
 };
-var author$project$Main$TeamDetailLoaded = function (a) {
+var author$project$MsgTree$TeamDetailLoaded = function (a) {
 	return {$: 'TeamDetailLoaded', a: a};
 };
-var author$project$Main$getTeamDetail = function (name) {
+var author$project$MsgTree$getTeamDetail = function (name) {
 	return A2(
-		author$project$Main$dummyHttp,
+		author$project$MsgTree$dummyHttp,
 		100,
-		author$project$Main$TeamDetailLoaded(
+		author$project$MsgTree$TeamDetailLoaded(
 			{id: '0', name: 'Awesome Team'}));
 };
-var author$project$Main$MembersLoaded = function (a) {
+var author$project$MsgTree$MembersLoaded = function (a) {
 	return {$: 'MembersLoaded', a: a};
 };
-var author$project$Main$getTeamMembers = function (name) {
+var author$project$MsgTree$getTeamMembers = function (name) {
 	return A2(
-		author$project$Main$dummyHttp,
+		author$project$MsgTree$dummyHttp,
 		50,
-		author$project$Main$MembersLoaded(
+		author$project$MsgTree$MembersLoaded(
 			_List_fromArray(
 				['Alice', 'Bob', 'Chuck'])));
 };
-var author$project$Main$UserLoaded = function (a) {
+var author$project$MsgTree$UserLoaded = function (a) {
 	return {$: 'UserLoaded', a: a};
 };
-var author$project$Main$getUser = A2(
-	author$project$Main$dummyHttp,
+var author$project$MsgTree$getUser = A2(
+	author$project$MsgTree$dummyHttp,
 	300,
-	author$project$Main$UserLoaded('Elmo'));
+	author$project$MsgTree$UserLoaded('Elmo'));
 var elm$core$Dict$Black = {$: 'Black'};
 var elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
@@ -5275,7 +5275,7 @@ var elm$core$List$head = function (list) {
 		return elm$core$Maybe$Nothing;
 	}
 };
-var author$project$Main$update = F2(
+var author$project$MsgTree$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'Load':
@@ -5283,7 +5283,7 @@ var author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{err: _List_Nil}),
-					author$project$Main$getUser);
+					author$project$MsgTree$getUser);
 			case 'UserLoaded':
 				var name = msg.a;
 				return _Utils_Tuple2(
@@ -5295,8 +5295,8 @@ var author$project$Main$update = F2(
 					elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
-								author$project$Main$getTeamDetail(name),
-								author$project$Main$getTeamMembers(name)
+								author$project$MsgTree$getTeamDetail(name),
+								author$project$MsgTree$getTeamMembers(name)
 							])));
 			case 'TeamDetailLoaded':
 				var team = msg.a;
@@ -5315,7 +5315,7 @@ var author$project$Main$update = F2(
 							selectedMember: elm$core$List$head(members)
 						}),
 					elm$core$Platform$Cmd$batch(
-						A2(elm$core$List$map, author$project$Main$getMemberDetail, members)));
+						A2(elm$core$List$map, author$project$MsgTree$getMemberDetail, members)));
 			case 'MemberDetailLoaded':
 				var detail = msg.a;
 				return _Utils_Tuple2(
@@ -5336,7 +5336,7 @@ var author$project$Main$update = F2(
 					elm$core$Platform$Cmd$none);
 		}
 	});
-var author$project$Main$Load = {$: 'Load'};
+var author$project$MsgTree$Load = {$: 'Load'};
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5355,7 +5355,7 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
-var author$project$Main$greeting = function (model) {
+var author$project$MsgTree$greeting = function (model) {
 	var _n0 = model.user;
 	if (_n0.$ === 'Just') {
 		var name = _n0.a;
@@ -5407,7 +5407,7 @@ var elm$core$Dict$get = F2(
 			}
 		}
 	});
-var author$project$Main$memberDetailView = function (model) {
+var author$project$MsgTree$memberDetailView = function (model) {
 	var _n0 = model.selectedMember;
 	if (_n0.$ === 'Just') {
 		var id = _n0.a;
@@ -5448,7 +5448,7 @@ var author$project$Main$memberDetailView = function (model) {
 		return elm$html$Html$text('');
 	}
 };
-var author$project$Main$memberItemView = function (name) {
+var author$project$MsgTree$memberItemView = function (name) {
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
@@ -5457,7 +5457,7 @@ var author$project$Main$memberItemView = function (name) {
 				elm$html$Html$text(name)
 			]));
 };
-var author$project$Main$teamDetailView = function (model) {
+var author$project$MsgTree$teamDetailView = function (model) {
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
@@ -5485,32 +5485,32 @@ var elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
-var author$project$Main$view = function (model) {
+var author$project$MsgTree$view = function (model) {
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
 		_List_fromArray(
 			[
-				author$project$Main$greeting(model),
+				author$project$MsgTree$greeting(model),
 				A2(
 				elm$html$Html$button,
 				_List_fromArray(
 					[
-						elm$html$Html$Events$onClick(author$project$Main$Load)
+						elm$html$Html$Events$onClick(author$project$MsgTree$Load)
 					]),
 				_List_fromArray(
 					[
 						elm$html$Html$text('Load')
 					])),
 				A2(elm$html$Html$hr, _List_Nil, _List_Nil),
-				author$project$Main$teamDetailView(model),
+				author$project$MsgTree$teamDetailView(model),
 				A2(elm$html$Html$hr, _List_Nil, _List_Nil),
 				A2(
 				elm$html$Html$div,
 				_List_Nil,
-				A2(elm$core$List$map, author$project$Main$memberItemView, model.members)),
+				A2(elm$core$List$map, author$project$MsgTree$memberItemView, model.members)),
 				A2(elm$html$Html$hr, _List_Nil, _List_Nil),
-				author$project$Main$memberDetailView(model)
+				author$project$MsgTree$memberDetailView(model)
 			]));
 };
 var author$project$TimeTravel$Browser$DebuggerMsg = function (a) {
@@ -8431,11 +8431,9 @@ var author$project$TimeTravel$Internal$View$buttonView = F3(
 			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$buttonHover,
 			elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(onClickMsg)
-					]),
+			A2(
+				elm$core$List$cons,
+				elm$html$Html$Events$onClick(onClickMsg),
 				author$project$TimeTravel$Internal$Styles$styles(buttonStyle)),
 			inner);
 	});
@@ -8469,11 +8467,9 @@ var author$project$TimeTravel$Internal$Styles$lineBase = _List_fromArray(
 		_Utils_Tuple2('padding-left', '10px'),
 		_Utils_Tuple2('white-space', 'pre')
 	]);
-var author$project$TimeTravel$Internal$Styles$addedLine = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('background-color', 'rgba(100, 255, 100, 0.15)')
-		]),
+var author$project$TimeTravel$Internal$Styles$addedLine = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('background-color', 'rgba(100, 255, 100, 0.15)'),
 	author$project$TimeTravel$Internal$Styles$lineBase);
 var author$project$TimeTravel$Internal$DiffView$addedLine = function (s) {
 	return A2(
@@ -8484,11 +8480,9 @@ var author$project$TimeTravel$Internal$DiffView$addedLine = function (s) {
 				elm$html$Html$text(s)
 			]));
 };
-var author$project$TimeTravel$Internal$Styles$deletedLine = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('background-color', 'rgba(255, 100, 100, 0.15)')
-		]),
+var author$project$TimeTravel$Internal$Styles$deletedLine = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('background-color', 'rgba(255, 100, 100, 0.15)'),
 	author$project$TimeTravel$Internal$Styles$lineBase);
 var author$project$TimeTravel$Internal$DiffView$deletedLine = function (s) {
 	return A2(
@@ -9062,12 +9056,10 @@ var author$project$TimeTravel$Internal$MsgTreeView$itemRow = F4(
 			author$project$TimeTravel$Internal$Styles$msgTreeViewItemRowHover(
 				_Utils_eq(selectedMsg, item.id)),
 			elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(
-						onSelect(item.id))
-					]),
+			A2(
+				elm$core$List$cons,
+				elm$html$Html$Events$onClick(
+					onSelect(item.id)),
 				author$project$TimeTravel$Internal$Styles$styles(
 					author$project$TimeTravel$Internal$Styles$msgTreeViewItemRow(
 						_Utils_eq(selectedMsg, item.id)))),
@@ -9188,11 +9180,9 @@ var author$project$TimeTravel$Internal$Styles$detailView = F2(
 				author$project$TimeTravel$Internal$Styles$debugViewTheme));
 	});
 var author$project$TimeTravel$Internal$Styles$detailViewHead = _List_Nil;
-var author$project$TimeTravel$Internal$Styles$detailedMsgView = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('white-space', 'pre')
-		]),
+var author$project$TimeTravel$Internal$Styles$detailedMsgView = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('white-space', 'pre'),
 	_Utils_ap(
 		author$project$TimeTravel$Internal$Styles$panel(true),
 		author$project$TimeTravel$Internal$Styles$panelBorder));
@@ -9206,11 +9196,9 @@ var author$project$TimeTravel$Internal$View$detailTab = F3(
 			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$detailTabHover,
 			elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(msg)
-					]),
+			A2(
+				elm$core$List$cons,
+				elm$html$Html$Events$onClick(msg),
 				author$project$TimeTravel$Internal$Styles$styles(styles)),
 			_List_fromArray(
 				[
@@ -9388,21 +9376,17 @@ var author$project$TimeTravel$Internal$Parser$AST$filterById = F2(
 		}
 	});
 var author$project$TimeTravel$Internal$Styles$modelDetailView = function (fixedToLeft) {
-	return _Utils_ap(
-		_List_fromArray(
-			[
-				_Utils_Tuple2('width', '320px'),
-				_Utils_Tuple2('z-index', author$project$TimeTravel$Internal$Styles$zIndex.modelDetailView),
-				_Utils_Tuple2('box-sizing', 'border-box'),
-				_Utils_Tuple2('height', '100%'),
-				_Utils_Tuple2('overflow-y', 'scroll')
-			]),
-		_List_fromArray(
-			[
-				_Utils_Tuple2('padding', '20px'),
-				_Utils_Tuple2('overflow-x', 'hidden'),
-				_Utils_Tuple2('overflow-y', 'scroll')
-			]));
+	return _List_fromArray(
+		[
+			_Utils_Tuple2('width', '320px'),
+			_Utils_Tuple2('z-index', author$project$TimeTravel$Internal$Styles$zIndex.modelDetailView),
+			_Utils_Tuple2('box-sizing', 'border-box'),
+			_Utils_Tuple2('height', '100%'),
+			_Utils_Tuple2('overflow-y', 'scroll'),
+			_Utils_Tuple2('padding', '20px'),
+			_Utils_Tuple2('overflow-x', 'hidden'),
+			_Utils_Tuple2('overflow-y', 'scroll')
+		]);
 };
 var author$project$TimeTravel$Internal$Styles$modelView = _Utils_ap(
 	_List_fromArray(
@@ -9424,11 +9408,9 @@ var author$project$TimeTravel$Internal$Styles$modelDetailFlagment = _List_fromAr
 		_Utils_Tuple2('white-space', 'pre'),
 		_Utils_Tuple2('display', 'inline')
 	]);
-var author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLink = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('cursor', 'pointer')
-		]),
+var author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLink = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('cursor', 'pointer'),
 	author$project$TimeTravel$Internal$Styles$modelDetailFlagment);
 var author$project$TimeTravel$Internal$Styles$textLinkHover = _List_fromArray(
 	[
@@ -9444,12 +9426,10 @@ var author$project$TimeTravel$Internal$Parser$Formatter$formatLinkAsHtml = F3(
 				author$project$TimeTravel$Internal$InlineHover$hover,
 				author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLinkHover,
 				elm$html$Html$span,
-				_Utils_ap(
-					_List_fromArray(
-						[
-							elm$html$Html$Events$onClick(
-							selectFilterMsg(id))
-						]),
+				A2(
+					elm$core$List$cons,
+					elm$html$Html$Events$onClick(
+						selectFilterMsg(id)),
 					author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLink)),
 				_List_fromArray(
 					[
@@ -9515,12 +9495,10 @@ var author$project$TimeTravel$Internal$Parser$Formatter$formatAsHtml = F4(
 						elm$core$List$cons,
 						A2(
 							elm$html$Html$span,
-							_Utils_ap(
-								_List_fromArray(
-									[
-										elm$html$Html$Events$onClick(
-										toggleMsg(id))
-									]),
+							A2(
+								elm$core$List$cons,
+								elm$html$Html$Events$onClick(
+									toggleMsg(id)),
 								author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailFlagmentToggleExpand)),
 							_List_fromArray(
 								[
@@ -9533,12 +9511,10 @@ var author$project$TimeTravel$Internal$Parser$Formatter$formatAsHtml = F4(
 						[
 							A2(
 							elm$html$Html$span,
-							_Utils_ap(
-								_List_fromArray(
-									[
-										elm$html$Html$Events$onClick(
-										toggleMsg(id))
-									]),
+							A2(
+								elm$core$List$cons,
+								elm$html$Html$Events$onClick(
+									toggleMsg(id)),
 								author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailFlagmentToggle)),
 							_List_fromArray(
 								[
@@ -9569,12 +9545,10 @@ var author$project$TimeTravel$Internal$View$modelDetailTreeEachId = function (id
 		author$project$TimeTravel$Internal$InlineHover$hover,
 		author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdWatchHover,
 		elm$html$Html$span,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					elm$html$Html$Events$onClick(
-					author$project$TimeTravel$Internal$Model$SelectModelFilterWatch(id))
-				]),
+		A2(
+			elm$core$List$cons,
+			elm$html$Html$Events$onClick(
+				author$project$TimeTravel$Internal$Model$SelectModelFilterWatch(id)),
 			author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdWatch)),
 		_List_fromArray(
 			[
@@ -9584,12 +9558,10 @@ var author$project$TimeTravel$Internal$View$modelDetailTreeEachId = function (id
 		author$project$TimeTravel$Internal$InlineHover$hover,
 		author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdHover,
 		elm$html$Html$span,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					elm$html$Html$Events$onClick(
-					author$project$TimeTravel$Internal$Model$SelectModelFilter(id))
-				]),
+		A2(
+			elm$core$List$cons,
+			elm$html$Html$Events$onClick(
+				author$project$TimeTravel$Internal$Model$SelectModelFilter(id)),
 			author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailTreeEachId)),
 		_List_fromArray(
 			[
@@ -9821,10 +9793,10 @@ var author$project$TimeTravel$Internal$View$detailView = function (model) {
 				var _n0 = author$project$TimeTravel$Internal$Model$selectedItem(model);
 				if (_n0.$ === 'Just') {
 					var item = _n0.a;
-					return A2(
-						elm$core$List$cons,
-						A5(author$project$TimeTravel$Internal$View$modelDetailView, model.fixedToLeft, model.modelFilter, model.expandedTree, item.lazyModelAst, item.model),
-						_List_Nil);
+					return _List_fromArray(
+						[
+							A5(author$project$TimeTravel$Internal$View$modelDetailView, model.fixedToLeft, model.modelFilter, model.expandedTree, item.lazyModelAst, item.model)
+						]);
 				} else {
 					return _List_Nil;
 				}
@@ -10222,11 +10194,9 @@ var elm$html$Html$Events$onMouseDown = function (msg) {
 var author$project$TimeTravel$Internal$View$resyncView = function (sync) {
 	return sync ? elm$html$Html$text('') : A2(
 		elm$html$Html$div,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					elm$html$Html$Events$onMouseDown(author$project$TimeTravel$Internal$Model$Resync)
-				]),
+		A2(
+			elm$core$List$cons,
+			elm$html$Html$Events$onMouseDown(author$project$TimeTravel$Internal$Model$Resync),
 			author$project$TimeTravel$Internal$Styles$styles(
 				author$project$TimeTravel$Internal$Styles$resyncView(sync))),
 		_List_Nil);
@@ -10258,11 +10228,9 @@ var author$project$TimeTravel$Internal$Styles$stopWatchingButtonHover = _List_fr
 	[
 		_Utils_Tuple2('opacity', '0.5')
 	]);
-var author$project$TimeTravel$Internal$Styles$watchView = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('position', 'relative')
-		]),
+var author$project$TimeTravel$Internal$Styles$watchView = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('position', 'relative'),
 	_Utils_ap(
 		author$project$TimeTravel$Internal$Styles$panel(true),
 		author$project$TimeTravel$Internal$Styles$panelBorder));
@@ -10290,11 +10258,9 @@ var author$project$TimeTravel$Internal$View$watchView = function (model) {
 			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$stopWatchingButtonHover,
 			elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(author$project$TimeTravel$Internal$Model$StopWatching)
-					]),
+			A2(
+				elm$core$List$cons,
+				elm$html$Html$Events$onClick(author$project$TimeTravel$Internal$Model$StopWatching),
 				author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$stopWatchingButton)),
 			_List_fromArray(
 				[author$project$TimeTravel$Internal$Icons$stopWatching]));
@@ -10540,12 +10506,12 @@ var author$project$TimeTravel$Browser$element = function (stuff) {
 	return elm$browser$Browser$element(
 		A2(author$project$TimeTravel$Browser$wrap, options, stuff));
 };
-var author$project$Main$main = author$project$TimeTravel$Browser$element(
-	{init: author$project$Main$init, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
-_Platform_export({'Main':{'init':author$project$Main$main(
+var author$project$MsgTree$main = author$project$TimeTravel$Browser$element(
+	{init: author$project$MsgTree$init, subscriptions: author$project$MsgTree$subscriptions, update: author$project$MsgTree$update, view: author$project$MsgTree$view});
+_Platform_export({'MsgTree':{'init':author$project$MsgTree$main(
 	elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
 
-var app = Elm.Main.init({ node: document.getElementById("elm-f0111bc4e658d0f98db96260c16f7e49") });
+var app = Elm.MsgTree.init({ node: document.getElementById("elm-f0111bc4e658d0f98db96260c16f7e49") });
 if (document.getElementById("elm-f0111bc4e658d0f98db96260c16f7e49"))
 {
   document.getElementById("elm-f0111bc4e658d0f98db96260c16f7e49").innerText = 'This is a headless program, meaning there is nothing to show here.\n\nI started the program anyway though, and you can access it as `app` in the developer console.';

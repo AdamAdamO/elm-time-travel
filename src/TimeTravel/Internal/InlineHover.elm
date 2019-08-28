@@ -5,7 +5,7 @@ module TimeTravel.Internal.InlineHover exposing (hover)
 @docs hover
 -}
 
-import Html exposing (text, node, Html, Attribute)
+import Html exposing (Html, Attribute)
 import Html.Attributes exposing (attribute)
 import Char
 

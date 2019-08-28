@@ -8205,11 +8205,9 @@ var author$project$TimeTravel$Internal$View$buttonView = F3(
 			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$buttonHover,
 			elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(onClickMsg)
-					]),
+			A2(
+				elm$core$List$cons,
+				elm$html$Html$Events$onClick(onClickMsg),
 				author$project$TimeTravel$Internal$Styles$styles(buttonStyle)),
 			inner);
 	});
@@ -8243,11 +8241,9 @@ var author$project$TimeTravel$Internal$Styles$lineBase = _List_fromArray(
 		_Utils_Tuple2('padding-left', '10px'),
 		_Utils_Tuple2('white-space', 'pre')
 	]);
-var author$project$TimeTravel$Internal$Styles$addedLine = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('background-color', 'rgba(100, 255, 100, 0.15)')
-		]),
+var author$project$TimeTravel$Internal$Styles$addedLine = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('background-color', 'rgba(100, 255, 100, 0.15)'),
 	author$project$TimeTravel$Internal$Styles$lineBase);
 var author$project$TimeTravel$Internal$DiffView$addedLine = function (s) {
 	return A2(
@@ -8258,11 +8254,9 @@ var author$project$TimeTravel$Internal$DiffView$addedLine = function (s) {
 				elm$html$Html$text(s)
 			]));
 };
-var author$project$TimeTravel$Internal$Styles$deletedLine = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('background-color', 'rgba(255, 100, 100, 0.15)')
-		]),
+var author$project$TimeTravel$Internal$Styles$deletedLine = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('background-color', 'rgba(255, 100, 100, 0.15)'),
 	author$project$TimeTravel$Internal$Styles$lineBase);
 var author$project$TimeTravel$Internal$DiffView$deletedLine = function (s) {
 	return A2(
@@ -8836,12 +8830,10 @@ var author$project$TimeTravel$Internal$MsgTreeView$itemRow = F4(
 			author$project$TimeTravel$Internal$Styles$msgTreeViewItemRowHover(
 				_Utils_eq(selectedMsg, item.id)),
 			elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(
-						onSelect(item.id))
-					]),
+			A2(
+				elm$core$List$cons,
+				elm$html$Html$Events$onClick(
+					onSelect(item.id)),
 				author$project$TimeTravel$Internal$Styles$styles(
 					author$project$TimeTravel$Internal$Styles$msgTreeViewItemRow(
 						_Utils_eq(selectedMsg, item.id)))),
@@ -8962,11 +8954,9 @@ var author$project$TimeTravel$Internal$Styles$detailView = F2(
 				author$project$TimeTravel$Internal$Styles$debugViewTheme));
 	});
 var author$project$TimeTravel$Internal$Styles$detailViewHead = _List_Nil;
-var author$project$TimeTravel$Internal$Styles$detailedMsgView = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('white-space', 'pre')
-		]),
+var author$project$TimeTravel$Internal$Styles$detailedMsgView = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('white-space', 'pre'),
 	_Utils_ap(
 		author$project$TimeTravel$Internal$Styles$panel(true),
 		author$project$TimeTravel$Internal$Styles$panelBorder));
@@ -8980,11 +8970,9 @@ var author$project$TimeTravel$Internal$View$detailTab = F3(
 			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$detailTabHover,
 			elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(msg)
-					]),
+			A2(
+				elm$core$List$cons,
+				elm$html$Html$Events$onClick(msg),
 				author$project$TimeTravel$Internal$Styles$styles(styles)),
 			_List_fromArray(
 				[
@@ -9162,21 +9150,17 @@ var author$project$TimeTravel$Internal$Parser$AST$filterById = F2(
 		}
 	});
 var author$project$TimeTravel$Internal$Styles$modelDetailView = function (fixedToLeft) {
-	return _Utils_ap(
-		_List_fromArray(
-			[
-				_Utils_Tuple2('width', '320px'),
-				_Utils_Tuple2('z-index', author$project$TimeTravel$Internal$Styles$zIndex.modelDetailView),
-				_Utils_Tuple2('box-sizing', 'border-box'),
-				_Utils_Tuple2('height', '100%'),
-				_Utils_Tuple2('overflow-y', 'scroll')
-			]),
-		_List_fromArray(
-			[
-				_Utils_Tuple2('padding', '20px'),
-				_Utils_Tuple2('overflow-x', 'hidden'),
-				_Utils_Tuple2('overflow-y', 'scroll')
-			]));
+	return _List_fromArray(
+		[
+			_Utils_Tuple2('width', '320px'),
+			_Utils_Tuple2('z-index', author$project$TimeTravel$Internal$Styles$zIndex.modelDetailView),
+			_Utils_Tuple2('box-sizing', 'border-box'),
+			_Utils_Tuple2('height', '100%'),
+			_Utils_Tuple2('overflow-y', 'scroll'),
+			_Utils_Tuple2('padding', '20px'),
+			_Utils_Tuple2('overflow-x', 'hidden'),
+			_Utils_Tuple2('overflow-y', 'scroll')
+		]);
 };
 var author$project$TimeTravel$Internal$Styles$modelView = _Utils_ap(
 	_List_fromArray(
@@ -9198,11 +9182,9 @@ var author$project$TimeTravel$Internal$Styles$modelDetailFlagment = _List_fromAr
 		_Utils_Tuple2('white-space', 'pre'),
 		_Utils_Tuple2('display', 'inline')
 	]);
-var author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLink = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('cursor', 'pointer')
-		]),
+var author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLink = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('cursor', 'pointer'),
 	author$project$TimeTravel$Internal$Styles$modelDetailFlagment);
 var author$project$TimeTravel$Internal$Styles$textLinkHover = _List_fromArray(
 	[
@@ -9218,12 +9200,10 @@ var author$project$TimeTravel$Internal$Parser$Formatter$formatLinkAsHtml = F3(
 				author$project$TimeTravel$Internal$InlineHover$hover,
 				author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLinkHover,
 				elm$html$Html$span,
-				_Utils_ap(
-					_List_fromArray(
-						[
-							elm$html$Html$Events$onClick(
-							selectFilterMsg(id))
-						]),
+				A2(
+					elm$core$List$cons,
+					elm$html$Html$Events$onClick(
+						selectFilterMsg(id)),
 					author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailFlagmentLink)),
 				_List_fromArray(
 					[
@@ -9289,12 +9269,10 @@ var author$project$TimeTravel$Internal$Parser$Formatter$formatAsHtml = F4(
 						elm$core$List$cons,
 						A2(
 							elm$html$Html$span,
-							_Utils_ap(
-								_List_fromArray(
-									[
-										elm$html$Html$Events$onClick(
-										toggleMsg(id))
-									]),
+							A2(
+								elm$core$List$cons,
+								elm$html$Html$Events$onClick(
+									toggleMsg(id)),
 								author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailFlagmentToggleExpand)),
 							_List_fromArray(
 								[
@@ -9307,12 +9285,10 @@ var author$project$TimeTravel$Internal$Parser$Formatter$formatAsHtml = F4(
 						[
 							A2(
 							elm$html$Html$span,
-							_Utils_ap(
-								_List_fromArray(
-									[
-										elm$html$Html$Events$onClick(
-										toggleMsg(id))
-									]),
+							A2(
+								elm$core$List$cons,
+								elm$html$Html$Events$onClick(
+									toggleMsg(id)),
 								author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailFlagmentToggle)),
 							_List_fromArray(
 								[
@@ -9343,12 +9319,10 @@ var author$project$TimeTravel$Internal$View$modelDetailTreeEachId = function (id
 		author$project$TimeTravel$Internal$InlineHover$hover,
 		author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdWatchHover,
 		elm$html$Html$span,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					elm$html$Html$Events$onClick(
-					author$project$TimeTravel$Internal$Model$SelectModelFilterWatch(id))
-				]),
+		A2(
+			elm$core$List$cons,
+			elm$html$Html$Events$onClick(
+				author$project$TimeTravel$Internal$Model$SelectModelFilterWatch(id)),
 			author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdWatch)),
 		_List_fromArray(
 			[
@@ -9358,12 +9332,10 @@ var author$project$TimeTravel$Internal$View$modelDetailTreeEachId = function (id
 		author$project$TimeTravel$Internal$InlineHover$hover,
 		author$project$TimeTravel$Internal$Styles$modelDetailTreeEachIdHover,
 		elm$html$Html$span,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					elm$html$Html$Events$onClick(
-					author$project$TimeTravel$Internal$Model$SelectModelFilter(id))
-				]),
+		A2(
+			elm$core$List$cons,
+			elm$html$Html$Events$onClick(
+				author$project$TimeTravel$Internal$Model$SelectModelFilter(id)),
 			author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$modelDetailTreeEachId)),
 		_List_fromArray(
 			[
@@ -9563,10 +9535,10 @@ var author$project$TimeTravel$Internal$View$detailView = function (model) {
 				var _n0 = author$project$TimeTravel$Internal$Model$selectedItem(model);
 				if (_n0.$ === 'Just') {
 					var item = _n0.a;
-					return A2(
-						elm$core$List$cons,
-						A5(author$project$TimeTravel$Internal$View$modelDetailView, model.fixedToLeft, model.modelFilter, model.expandedTree, item.lazyModelAst, item.model),
-						_List_Nil);
+					return _List_fromArray(
+						[
+							A5(author$project$TimeTravel$Internal$View$modelDetailView, model.fixedToLeft, model.modelFilter, model.expandedTree, item.lazyModelAst, item.model)
+						]);
 				} else {
 					return _List_Nil;
 				}
@@ -9964,11 +9936,9 @@ var elm$html$Html$Events$onMouseDown = function (msg) {
 var author$project$TimeTravel$Internal$View$resyncView = function (sync) {
 	return sync ? elm$html$Html$text('') : A2(
 		elm$html$Html$div,
-		_Utils_ap(
-			_List_fromArray(
-				[
-					elm$html$Html$Events$onMouseDown(author$project$TimeTravel$Internal$Model$Resync)
-				]),
+		A2(
+			elm$core$List$cons,
+			elm$html$Html$Events$onMouseDown(author$project$TimeTravel$Internal$Model$Resync),
 			author$project$TimeTravel$Internal$Styles$styles(
 				author$project$TimeTravel$Internal$Styles$resyncView(sync))),
 		_List_Nil);
@@ -10000,11 +9970,9 @@ var author$project$TimeTravel$Internal$Styles$stopWatchingButtonHover = _List_fr
 	[
 		_Utils_Tuple2('opacity', '0.5')
 	]);
-var author$project$TimeTravel$Internal$Styles$watchView = _Utils_ap(
-	_List_fromArray(
-		[
-			_Utils_Tuple2('position', 'relative')
-		]),
+var author$project$TimeTravel$Internal$Styles$watchView = A2(
+	elm$core$List$cons,
+	_Utils_Tuple2('position', 'relative'),
 	_Utils_ap(
 		author$project$TimeTravel$Internal$Styles$panel(true),
 		author$project$TimeTravel$Internal$Styles$panelBorder));
@@ -10032,11 +10000,9 @@ var author$project$TimeTravel$Internal$View$watchView = function (model) {
 			author$project$TimeTravel$Internal$InlineHover$hover,
 			author$project$TimeTravel$Internal$Styles$stopWatchingButtonHover,
 			elm$html$Html$div,
-			_Utils_ap(
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(author$project$TimeTravel$Internal$Model$StopWatching)
-					]),
+			A2(
+				elm$core$List$cons,
+				elm$html$Html$Events$onClick(author$project$TimeTravel$Internal$Model$StopWatching),
 				author$project$TimeTravel$Internal$Styles$styles(author$project$TimeTravel$Internal$Styles$stopWatchingButton)),
 			_List_fromArray(
 				[author$project$TimeTravel$Internal$Icons$stopWatching]));

@@ -1,8 +1,11 @@
 module TimeTravel.Internal.View exposing (view, document)
 
-import TimeTravel.Internal.Model exposing (..)
+import TimeTravel.Internal.Model exposing 
+  (Msg(..), Model, Id, FilterOptions, HistoryItem
+  , selectedItem, selectedMsgTree, selectedMsgAst
+  )
 import TimeTravel.Internal.MsgLike as MsgLike exposing (MsgLike(..))
-import TimeTravel.Internal.Util.Nel as Nel exposing (..)
+import TimeTravel.Internal.Util.Nel as Nel
 import TimeTravel.Internal.Styles as S
 import TimeTravel.Internal.Icons as I
 import TimeTravel.Internal.MsgTreeView as MsgTreeView
@@ -11,9 +14,9 @@ import TimeTravel.Internal.Parser.Formatter as Formatter
 import TimeTravel.Internal.Parser.AST as AST exposing (ASTX)
 import TimeTravel.Internal.InlineHover exposing (hover)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, div, span, text, input, label)
+import Html.Attributes exposing (type_, checked, placeholder, value, title)
+import Html.Events exposing (onClick, onMouseDown, onInput)
 import Html.Keyed as Keyed
 
 import Set exposing (Set)
@@ -94,8 +97,8 @@ resyncView sync =
     text ""
   else
     div 
-      ([ onMouseDown Resync 
-      ] ++ S.styles (S.resyncView sync))
+      ( onMouseDown Resync 
+       :: S.styles (S.resyncView sync))
       []
 
 
@@ -116,8 +119,8 @@ headerView fixedToLeft sync expand filterOptions =
 buttonView : msg -> List (String, String) -> List (Html msg) -> Html msg
 buttonView onClickMsg buttonStyle inner =
   hover S.buttonHover div 
-    ([ onClick onClickMsg     
-    ] ++ S.styles buttonStyle)
+    ( onClick onClickMsg     
+      :: S.styles buttonStyle)
     inner
 
 
@@ -220,8 +223,8 @@ modelDetailTreeEachId id =
       hover
         S.modelDetailTreeEachIdHover
         span
-        ([ onClick (SelectModelFilter id)
-        ] ++ S.styles S.modelDetailTreeEachId)
+        ( onClick (SelectModelFilter id)
+          :: S.styles S.modelDetailTreeEachId)
         [ text id
         ]
 
@@ -229,8 +232,8 @@ modelDetailTreeEachId id =
       hover
         S.modelDetailTreeEachIdWatchHover
         span
-        ([ onClick (SelectModelFilterWatch id)
-        ] ++ S.styles S.modelDetailTreeEachIdWatch)
+        ( onClick (SelectModelFilterWatch id)
+          :: S.styles S.modelDetailTreeEachIdWatch)
         [ text "watch"
         ]
   in
@@ -272,8 +275,8 @@ watchView model =
           hover
             S.stopWatchingButtonHover
             div
-            ([ onClick StopWatching
-            ] ++ S.styles S.stopWatchingButton)
+            ( onClick StopWatching
+              :: S.styles S.stopWatchingButton)
             [ I.stopWatching ]
       in
         div
@@ -384,13 +387,12 @@ detailView model =
         if model.showModelDetail then
           case selectedItem model of
             Just item ->
-              modelDetailView
+              [ modelDetailView
                 model.fixedToLeft
                 model.modelFilter
                 model.expandedTree
                 item.lazyModelAst
-                item.model
-              :: []
+                item.model ]
             _ ->
               []
         else
@@ -410,6 +412,6 @@ detailView model =
 detailTab : List (String, String) -> msg -> String -> Html msg
 detailTab styles msg name =
   hover S.detailTabHover div 
-    ([ onClick msg 
-    ] ++ S.styles styles)
+    ( onClick msg 
+      :: S.styles styles)
     [ text name ]

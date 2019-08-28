@@ -1,4 +1,8 @@
-module TimeTravel.Internal.Parser.AST exposing (..)
+module TimeTravel.Internal.Parser.AST exposing 
+  ( AST(..), ASTId, ASTX(..)
+  , attachId, attachIdToList, attachIdToListWithIndex
+  , filterById, filterByExactId, filterByExactIdForList
+  )
 
 
 type AST

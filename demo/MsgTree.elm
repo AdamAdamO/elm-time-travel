@@ -1,10 +1,7 @@
-port module Main exposing (..)
+module MsgTree exposing (main)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http
-import Json.Decode as Json
+import Html exposing (Html, div, text, button, hr)
+import Html.Events exposing (onClick)
 import Task
 
 import TimeTravel.Browser as TimeTravel
@@ -58,15 +55,6 @@ type alias Member =
   }
 
 
-initMember : Member
-initMember =
-  { id = ""
-  , name = ""
-  , tel = ""
-  , mail = ""
-  }
-
-
 initTeam : Team
 initTeam =
   { id = ""
@@ -75,7 +63,7 @@ initTeam =
 
 
 init : () -> (Model, Cmd Msg)
-init flags =
+init _ =
   ( { user = Nothing
     , team = initTeam
     , members = []

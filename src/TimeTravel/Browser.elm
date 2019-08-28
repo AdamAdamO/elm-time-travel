@@ -19,7 +19,7 @@ import TimeTravel.Internal.Update as Update
 import TimeTravel.Internal.View as View
 import TimeTravel.Internal.Util.Nel as Nel
 
-import Html exposing (Html, div, text)
+import Html exposing (Html)
 import Browser
 import Browser.Navigation exposing (Key)
 import Url

@@ -6,9 +6,8 @@ import TimeTravel.Internal.Model exposing (HistoryItem, Id)
 import TimeTravel.Internal.MsgLike as MsgLike
 import TimeTravel.Internal.InlineHover exposing (hover)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, div, text)
+import Html.Events exposing (onClick)
 
 import Diff exposing (..)
 
@@ -32,6 +31,6 @@ itemRow onSelect indent selectedMsg item =
   hover
     (S.msgTreeViewItemRowHover (selectedMsg == item.id))
     div
-    ([ onClick (onSelect item.id)
-    ] ++ S.styles (S.msgTreeViewItemRow (selectedMsg == item.id)))
+    ( onClick (onSelect item.id)
+      :: S.styles (S.msgTreeViewItemRow (selectedMsg == item.id)))
     [ text (String.repeat indent "    " ++ String.fromInt item.id ++ ": " ++ MsgLike.format item.msg) ]

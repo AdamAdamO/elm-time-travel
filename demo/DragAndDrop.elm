@@ -1,7 +1,9 @@
-import Html exposing (..)
-import Html.Attributes exposing (..)
+module DragAndDrop exposing (main)
+
+import Html exposing (div, text, Html, Attribute)
+import Html.Attributes exposing (style)
 import Html.Events exposing (on)
-import Json.Decode as Decode exposing (field, Decoder)
+import Json.Decode as Decode exposing (field)
 import Browser.Events as Browser
 
 import TimeTravel.Browser as TimeTravel
@@ -36,7 +38,7 @@ type alias Drag =
 
 
 init : () -> ( Model, Cmd Msg )
-init flags =
+init _ =
   ( Model (Position 200 200) Nothing, Cmd.none )
 
 

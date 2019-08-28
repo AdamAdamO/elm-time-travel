@@ -1,9 +1,15 @@
-module TimeTravel.Internal.Parser.Formatter exposing (..)
+module TimeTravel.Internal.Parser.Formatter exposing 
+  ( Context, FormatModel
+  , makeModel, makeModelFromListLike, makeModelWithContext
+  , indent, joinX
+  , formatAsHtml, formatAsString, formatHelp
+  , formatLinkAsHtml, formatPlainAsHtml
+  )
 
 import Set exposing (Set)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, span, text)
+import Html.Attributes exposing (title)
+import Html.Events exposing (onClick)
 
 import TimeTravel.Internal.Styles as S
 import TimeTravel.Internal.Parser.AST as AST exposing (..)
@@ -144,14 +150,14 @@ formatAsHtml selectFilterMsg toggleMsg expandedTree model =
     (\id alt children ->
       if Set.member id expandedTree then
         span
-          ([ onClick (toggleMsg id)
-          ] ++ S.styles S.modelDetailFlagmentToggleExpand)
+          (onClick (toggleMsg id)
+           :: S.styles S.modelDetailFlagmentToggleExpand)
           [ text " - " ]
         :: List.concatMap (formatAsHtml selectFilterMsg toggleMsg expandedTree) children
       else
         [ span
-            ([ onClick (toggleMsg id)
-            ] ++ S.styles S.modelDetailFlagmentToggle)
+            (onClick (toggleMsg id)
+             :: S.styles S.modelDetailFlagmentToggle)
             [ text alt ]
         ]
     ) model
@@ -172,8 +178,8 @@ formatLinkAsHtml selectFilterMsg id s =
    [ hover
        S.modelDetailFlagmentLinkHover
        span
-       ([ onClick (selectFilterMsg id)
-       ] ++ S.styles S.modelDetailFlagmentLink)
+       ( onClick (selectFilterMsg id)
+         :: S.styles S.modelDetailFlagmentLink)
        [ text s ]
    ]
 

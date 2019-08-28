@@ -177,8 +177,7 @@ modelDetailView fixedToLeft =
   , ("box-sizing", "border-box")
   , ("height", "100%")
   , ("overflow-y", "scroll")
-  ] ++ --panel True
-  [ ("padding", "20px")
+  , ("padding", "20px")
   , ("overflow-x", "hidden")
   , ("overflow-y", "scroll")
   ]
@@ -193,7 +192,7 @@ modelDetailFlagment =
 
 modelDetailFlagmentLink : List (String, String)
 modelDetailFlagmentLink =
-  [("cursor", "pointer")] ++ modelDetailFlagment
+  ("cursor", "pointer") :: modelDetailFlagment
 
 
 modelDetailFlagmentLinkHover : List (String, String)
@@ -220,8 +219,8 @@ modelDetailFlagmentToggleExpand =
 
 watchView : List (String, String)
 watchView =
-  [ ("position", "relative")
-  ] ++ panel True ++ panelBorder
+  ("position", "relative")
+  :: panel True ++ panelBorder
 
 
 watchViewHeader : List (String, String)
@@ -311,7 +310,7 @@ msgTreeView =
 
 detailedMsgView : List (String, String)
 detailedMsgView =
-  [ ("white-space", "pre") ] ++ panel True ++ panelBorder
+  ("white-space", "pre") :: panel True ++ panelBorder
 
 
 msgTreeViewItemRow : Bool -> List (String, String)
@@ -352,14 +351,14 @@ normalLine =
 
 deletedLine : List (String, String)
 deletedLine =
-  [ ("background-color", "rgba(255, 100, 100, 0.15)")
-  ] ++ lineBase
+  ("background-color", "rgba(255, 100, 100, 0.15)")
+  :: lineBase
 
 
 addedLine : List (String, String)
 addedLine =
-  [ ("background-color", "rgba(100, 255, 100, 0.15)")
-  ] ++ lineBase
+  ("background-color", "rgba(100, 255, 100, 0.15)")
+  :: lineBase
 
 
 diffOrModelDetailViewContainer : List (String, String)

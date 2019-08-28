@@ -1,4 +1,6 @@
-module TimeTravel.Internal.Parser.Util exposing (..)
+module TimeTravel.Internal.Parser.Util exposing 
+  ( spaced, spaces, comma, equal
+  )
 
 import Combine exposing (Parser, between, regex, string)
 

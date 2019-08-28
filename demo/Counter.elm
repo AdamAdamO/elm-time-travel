@@ -1,4 +1,6 @@
-import Html exposing (div, button, text)
+module Counter exposing (main)
+
+import Html exposing (Html, div, button, text)
 import Html.Events exposing (onClick)
 
 import TimeTravel.Browser as TimeTravel
@@ -12,6 +14,7 @@ main =
     }
 
 
+view: Int -> Html Msg
 view model =
   div []
     [ button [ onClick Decrement ] [ text "-" ]
@@ -23,6 +26,7 @@ view model =
 type Msg = Increment | Decrement
 
 
+update: Msg -> Int -> Int
 update msg model =
   case msg of
     Increment ->

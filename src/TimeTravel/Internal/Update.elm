@@ -1,7 +1,9 @@
 module TimeTravel.Internal.Update exposing (update, updateAfterUserMsg)
 
-import TimeTravel.Internal.Model exposing (..)
-import TimeTravel.Internal.Util.Nel as Nel exposing (..)
+import TimeTravel.Internal.Model exposing 
+  (OutgoingMsg, Msg(..), Model, saveSetting
+  , decodeSettings, selectFirstIfSync, futureToHistory
+  , updateLazyAst, updateLazyDiff, updateLazyAstForWatch)
 import Set exposing (Set)
 
 update : (OutgoingMsg -> Cmd Never) -> Msg -> Model model msg -> (Model model msg, Cmd Msg)
@@ -83,7 +85,7 @@ update save message model =
       let
         newModel =
           { model |
-            fixedToLeft = not (model.fixedToLeft)
+            fixedToLeft = not model.fixedToLeft
           }
       in
         (newModel, Cmd.batch [ saveSetting save newModel ])

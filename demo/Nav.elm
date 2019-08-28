@@ -1,6 +1,7 @@
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+module Nav exposing (main)
+
+import Html exposing (Html, h1, ul, li, text, a)
+import Html.Attributes exposing (href)
 import Browser
 import Browser.Navigation as Navigation
 import Url
@@ -31,7 +32,7 @@ type alias Model =
 
 
 init : () -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
-init flags url key =
+init _ url key =
   let
     model = 
       { history = [ url ]

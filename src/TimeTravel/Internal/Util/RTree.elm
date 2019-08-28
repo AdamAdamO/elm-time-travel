@@ -1,4 +1,8 @@
-module TimeTravel.Internal.Util.RTree exposing (..)
+module TimeTravel.Internal.Util.RTree exposing 
+  ( RTree(..)
+  , singleton, root, addChild, addChildAt
+  , sortEachBranchBy
+  )
 
 type RTree a =
   Node a (List (RTree a))

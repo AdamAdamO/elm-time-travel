@@ -1,4 +1,8 @@
-module TimeTravel.Internal.Icons exposing (..)
+module TimeTravel.Internal.Icons exposing 
+  ( sync, filter, filterExpand
+  , layout, minimize, toggleModelDetail
+  , stopWatching
+  )
 
 import Material.Icons.Content exposing (filter_list, content_copy, remove, add)
 import Material.Icons.Navigation exposing (arrow_drop_down, arrow_drop_up, close)

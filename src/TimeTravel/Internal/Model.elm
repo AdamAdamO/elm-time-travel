@@ -1,12 +1,24 @@
-module TimeTravel.Internal.Model exposing (..)
+module TimeTravel.Internal.Model exposing 
+  ( HistoryItem, Id, FilterOptions, Settings
+  , OutgoingMsg, IncomingMsg, Model, Msg(..)
+  , updateLazyAst, updateLazyAstForWatch
+  , updateLazyDiff, updateLazyDiffHelp
+  , updateLazyModelAst, updateLazyMsgAst
+  , updateOnIncomingUserMsg
+  , updateFilter, futureToHistory
+  , selectFirstIfSync, selectedAndOldAst
+  , selectedItem, selectedMsgAst, selectedMsgTree
+  , saveSetting, decodeSettings
+  , init
+  )
 
 import Set exposing (Set)
 
-import TimeTravel.Internal.Util.Nel as Nel exposing (..)
+import TimeTravel.Internal.Util.Nel as Nel exposing (Nel(..))
+import TimeTravel.Internal.Util.RTree as RTree exposing (RTree(..))
 import TimeTravel.Internal.Parser.AST as AST exposing (ASTX)
 import TimeTravel.Internal.Parser.Parser as Parser
 import TimeTravel.Internal.Parser.Formatter as Formatter
-import TimeTravel.Internal.Util.RTree as RTree exposing (RTree)
 import TimeTravel.Internal.MsgLike exposing (MsgLike(..))
 
 import Json.Decode as Decode exposing (field, Decoder)

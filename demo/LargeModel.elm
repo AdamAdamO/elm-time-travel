@@ -1,3 +1,5 @@
+module LargeModel exposing (main)
+
 import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
 

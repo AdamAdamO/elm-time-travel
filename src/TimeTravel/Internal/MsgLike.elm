@@ -1,4 +1,7 @@
-module TimeTravel.Internal.MsgLike exposing (..)
+module TimeTravel.Internal.MsgLike exposing 
+  ( MsgLike(..)
+  , format
+  )
 
 
 type MsgLike msg

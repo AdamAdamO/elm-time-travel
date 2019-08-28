@@ -1,4 +1,11 @@
-module TimeTravel.Internal.Util.Nel exposing (..)
+module TimeTravel.Internal.Util.Nel exposing 
+  ( Nel(..)
+  , toList, map, filter, filterMap
+  , find, findHelp, findMap
+  , findMapHelp, findMapMany, findMapManyHelp
+  , take, takeHelp
+  , head, concat, cons
+  )
 
 -- non-empty list
 type Nel a =
