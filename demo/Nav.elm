@@ -9,9 +9,14 @@ import Url
 import TimeTravel.Browser as TimeTravel
 
 
+config = 
+  { msgToString = Debug.toString 
+  , modelToString = Debug.toString
+  }
+
 main =
   --TimeTravel.program UrlChange
-  TimeTravel.application
+  TimeTravel.application config
     { init = init
     , view = view
     , update = update

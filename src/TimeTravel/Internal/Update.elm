@@ -1,13 +1,13 @@
 module TimeTravel.Internal.Update exposing (update, updateAfterUserMsg)
 
 import TimeTravel.Internal.Model exposing 
-  (OutgoingMsg, Msg(..), Model, saveSetting
-  , decodeSettings, selectFirstIfSync, futureToHistory
+  ( OutgoingMsg, Msg(..), Model
+  , saveSetting, decodeSettings, selectFirstIfSync, futureToHistory
   , updateLazyAst, updateLazyDiff, updateLazyAstForWatch)
 import Set exposing (Set)
 
-update : (OutgoingMsg -> Cmd Never) -> Msg -> Model model msg -> (Model model msg, Cmd Msg)
-update save message model =
+update : (OutgoingMsg -> Cmd Never) -> (msg -> String) -> Msg -> (model -> String) -> Model model msg -> (Model model msg, Cmd Msg)
+update save msgToString message modelToString model =
   case message of
     Receive incomingMsg ->
       if incomingMsg.type_ == "load" then
@@ -16,7 +16,7 @@ update save message model =
             ({ model | fixedToLeft = fixedToLeft, filter = filter }, Cmd.none)
 
           Err error ->
-            (model, Cmd.none) |> Debug.log "err decoding"
+            (model, Cmd.none)
       else
         (model, Cmd.none)
 
@@ -68,7 +68,7 @@ update save message model =
           { model |
             selectedMsg = Just id
           , sync = False
-          } |> updateLazyAst |> updateLazyDiff
+          } |> updateLazyAst modelToString msgToString |> updateLazyDiff
       in
         (newModel, Cmd.none)
 
@@ -120,7 +120,7 @@ update save message model =
           modelFilter = id
         , watch = Just id
         }
-        |> updateLazyAstForWatch
+        |> updateLazyAstForWatch modelToString
       , Cmd.none)
 
     StopWatching ->

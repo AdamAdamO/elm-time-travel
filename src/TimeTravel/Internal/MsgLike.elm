@@ -9,8 +9,8 @@ type MsgLike msg
   | Init
 
 
-format : MsgLike msg -> String
-format msgLike =
+format : (msg -> String) -> MsgLike msg -> String
+format msgToString msgLike =
   case msgLike of
-    Message m -> Debug.toString m
+    Message m -> msgToString m
     Init -> "[Init]"

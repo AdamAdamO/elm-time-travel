@@ -10,10 +10,14 @@ import TimeTravel.Browser
 
 -- MAIN
 
+config = 
+  { msgToString = Debug.toString 
+  , modelToString = Debug.toString
+  }
 
 main =
   --Browser.document
-  TimeTravel.Browser.document
+  TimeTravel.Browser.document config
     { init = init
     , view = view
     , update = update

@@ -24,10 +24,10 @@ import Browser
 import Browser.Navigation exposing (Key)
 import Url
 
+
 type Msg msg
   = DebuggerMsg Model.Msg
   | UserMsg (Maybe Int, msg)
-
 
 {- Alias for internal use -}
 type alias OptionsWithFlags flags model msg =
@@ -61,17 +61,22 @@ type alias IncomingMsg = Model.IncomingMsg
 {-| See [Browser.sandbox](https://package.elm-lang.org/packages/elm/browser/latest/Browser#sandbox)
 -}
 sandbox :
+  { msgToString: msg -> String
+  , modelToString: model -> String
+  }
+  ->
   { init : model
   , view : model -> Html msg
   , update : msg -> model -> model
   }
   -> Program () (Model model msg) (Msg msg)
-sandbox { init, view, update } =
+sandbox config { init, view, update } =
   let
     options =
       wrap
         { outgoingMsg = always Cmd.none
         , incomingMsg = always Sub.none
+        , config = config
         }
         { init = always (init, Cmd.none)
         , view = view
@@ -89,36 +94,57 @@ sandbox { init, view, update } =
 {-| See [Browser.element](https://package.elm-lang.org/packages/elm/browser/latest/Browser#element)
 -}
 element :
+  { msgToString: msg -> String
+  , modelToString: model -> String
+  }
+  ->
   { init : flags -> (model, Cmd msg)
   , view : model -> Html msg
   , update : msg -> model -> (model, Cmd msg)
   , subscriptions : model -> Sub msg
   }
   -> Program flags (Model model msg) (Msg msg)
-element stuff =
+element config {init, view, update, subscriptions} =
   let
-    options = 
-      { outgoingMsg = always Cmd.none
-      , incomingMsg = always Sub.none
-      }
+    options =
+      wrap
+        { outgoingMsg = always Cmd.none
+        , incomingMsg = always Sub.none
+        , config = config
+        }
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
   in    
-    Browser.element (wrap options stuff)
+    Browser.element
+      { init = \flags -> options.init flags
+      , view = options.view
+      , update = options.update
+      , subscriptions = options.subscriptions
+      }
 
 
 {-| See [Browser.document](https://package.elm-lang.org/packages/elm/browser/latest/Browser#document)
 -}
 document :
+  { msgToString: msg -> String
+  , modelToString: model -> String
+  }
+  ->
   { init : flags -> (model, Cmd msg)
   , view : model -> Browser.Document msg
   , update : msg -> model -> (model, Cmd msg)
   , subscriptions : model -> Sub msg
   }
   -> Program flags (Model model msg) (Msg msg)
-document stuff =
+document config stuff =
   let
     options = 
       { outgoingMsg = always Cmd.none
       , incomingMsg = always Sub.none
+      , config = config
       }
   in    
     Browser.document (wrapDocument options stuff)
@@ -127,6 +153,10 @@ document stuff =
 {-| See [Browser.application](https://package.elm-lang.org/packages/elm/browser/latest/Browser#application)
 -}
 application :
+  { msgToString: msg -> String
+  , modelToString: model -> String
+  }
+  ->
   { init : flags -> Url.Url -> Key -> (model, Cmd msg)
   , view : model -> Browser.Document msg
   , update : msg -> model -> (model, Cmd msg)
@@ -135,11 +165,12 @@ application :
   , onUrlChange : Url.Url -> msg
   }
   -> Program flags (Model model msg) (Msg msg)
-application stuff =
+application config stuff =
   let
     options = 
       { outgoingMsg = always Cmd.none
       , incomingMsg = always Sub.none
+      , config = config
       }
   in    
     Browser.application (wrapApplication options stuff)
@@ -148,19 +179,23 @@ application stuff =
 wrap :
   { outgoingMsg : OutgoingMsg -> Cmd Never
   , incomingMsg : (IncomingMsg -> (Msg msg)) -> Sub (Msg msg)
+  , config:
+    { msgToString: msg -> String
+    , modelToString: model -> String
+    }
   }
   -> OptionsWithFlags flags model msg
   -> OptionsWithFlags flags (Model model msg) (Msg msg)
-wrap { outgoingMsg, incomingMsg } { init, view, update, subscriptions } =
+wrap { outgoingMsg, incomingMsg, config } { init, view, update, subscriptions } =
   let
     init_ flags =
       wrapInit (init flags)
 
     update_ msg model =
-      wrapUpdate update outgoingMsg msg model
+      wrapUpdate update outgoingMsg config.msgToString msg config.modelToString model
 
     view_ model =
-      View.view (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
+      View.view (\c -> UserMsg (Nothing, c)) DebuggerMsg config.msgToString view config.modelToString model
 
     subscriptions_ model =
       wrapSubscriptions subscriptions incomingMsg model
@@ -176,19 +211,23 @@ wrap { outgoingMsg, incomingMsg } { init, view, update, subscriptions } =
 wrapDocument :
   { outgoingMsg : OutgoingMsg -> Cmd Never
   , incomingMsg : (IncomingMsg -> (Msg msg)) -> Sub (Msg msg)
+  , config:
+    { msgToString: msg -> String
+    , modelToString: model -> String
+    }
   }
   -> OptionsForDocument flags model msg
   -> OptionsForDocument flags (Model model msg) (Msg msg)
-wrapDocument { outgoingMsg, incomingMsg } { init, view, update, subscriptions } =
+wrapDocument { outgoingMsg, incomingMsg, config } { init, view, update, subscriptions } =
   let
     init_ flags =
       wrapInit (init flags)
 
     update_ msg model =
-      wrapUpdate update outgoingMsg msg model
+      wrapUpdate update outgoingMsg config.msgToString msg config.modelToString model
 
     view_ model =
-      View.document (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
+      View.document (\c -> UserMsg (Nothing, c)) DebuggerMsg config.msgToString view config.modelToString model
 
     subscriptions_ model =
       wrapSubscriptions subscriptions incomingMsg model
@@ -204,19 +243,23 @@ wrapDocument { outgoingMsg, incomingMsg } { init, view, update, subscriptions } 
 wrapApplication :
   { outgoingMsg : OutgoingMsg -> Cmd Never
   , incomingMsg : (IncomingMsg -> (Msg msg)) -> Sub (Msg msg)
+  , config:
+    { msgToString: msg -> String
+    , modelToString: model -> String
+    }
   }
   -> OptionsForApplication flags model msg
   -> OptionsForApplication flags (Model model msg) (Msg msg)
-wrapApplication { outgoingMsg, incomingMsg } { init, view, update, subscriptions, onUrlRequest, onUrlChange } =
+wrapApplication { outgoingMsg, incomingMsg, config } { init, view, update, subscriptions, onUrlRequest, onUrlChange } =
   let
     init_ flags url key =
       wrapInit (init flags url key)
 
     update_ msg model =
-      wrapUpdate update outgoingMsg msg model
+      wrapUpdate update outgoingMsg config.msgToString msg config.modelToString model
 
     view_ model =
-      View.document (\c -> UserMsg (Nothing, c)) DebuggerMsg view model
+      View.document (\c -> UserMsg (Nothing, c)) DebuggerMsg config.msgToString view config.modelToString model
 
     subscriptions_ model =
       wrapSubscriptions subscriptions incomingMsg model
@@ -239,12 +282,12 @@ wrapApplication { outgoingMsg, incomingMsg } { init, view, update, subscriptions
 wrapInit (model, cmd) =  
   (Model.init model, Cmd.batch [ Cmd.map (\msg -> UserMsg (Just 0, msg)) cmd ])
 
-wrapUpdate update outgoingMsg msg model =
+wrapUpdate update outgoingMsg msgToString msg modelToString model =
       case msg of
         UserMsg msgWithId ->
           let
             (m, c1) =
-              updateOnIncomingUserMsg (\(id, msg_) -> UserMsg (Just id, msg_)) update msgWithId model
+              updateOnIncomingUserMsg (\(id, msg_) -> UserMsg (Just id, msg_)) update msgWithId msgToString modelToString model
 
             (m_, c2) =
               Update.updateAfterUserMsg outgoingMsg m
@@ -254,7 +297,7 @@ wrapUpdate update outgoingMsg msg model =
         DebuggerMsg msg_ ->
           let
             (m, c) =
-              Update.update outgoingMsg msg_ model
+              Update.update outgoingMsg msgToString msg_ modelToString model
           in
             (m, Cmd.batch [ Cmd.map DebuggerMsg c ])
 

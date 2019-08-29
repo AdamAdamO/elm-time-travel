@@ -5,9 +5,13 @@ import Html.Events exposing (onClick)
 
 import TimeTravel.Browser as TimeTravel
 
+config = 
+  { msgToString = Debug.toString
+  , modelToString = Debug.toString
+  }
 
 main =
-  TimeTravel.sandbox 
+  TimeTravel.sandbox config
     { init = 0
     , view = view
     , update = update 

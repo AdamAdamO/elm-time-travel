@@ -143,9 +143,11 @@ updateOnIncomingUserMsg :
      ((Id, msg) -> parentMsg)
   -> (msg -> model -> (model, Cmd msg))
   -> (Maybe Id, msg)
+  -> (msg -> String)
+  -> (model -> String)
   -> Model model msg
   -> (Model model msg, Cmd parentMsg)
-updateOnIncomingUserMsg transformMsg update (causedBy, msg) model =
+updateOnIncomingUserMsg transformMsg update (causedBy, msg) msgToString modelToString model =
   let
     (Nel last past) = model.history
 
@@ -156,7 +158,7 @@ updateOnIncomingUserMsg transformMsg update (causedBy, msg) model =
     nextItem = newItem model.msgId megLike causedBy newRawUserModel
 
     newModel = { model 
-      | filter = updateFilter megLike model.filter
+      | filter = updateFilter msgToString megLike model.filter
       , msgId = model.msgId + 1
       , future =
           if not model.sync then
@@ -168,7 +170,7 @@ updateOnIncomingUserMsg transformMsg update (causedBy, msg) model =
             Nel.cons nextItem model.history
           else
             model.history
-      } |> selectFirstIfSync |> updateLazyAstForWatch
+      } |> selectFirstIfSync |> updateLazyAstForWatch modelToString
     cmds = 
       [ Cmd.map transformMsg (Cmd.map (createTuple model.msgId) userCmd)
       ]
@@ -176,12 +178,12 @@ updateOnIncomingUserMsg transformMsg update (causedBy, msg) model =
     (newModel , Cmd.batch cmds)
 
 
-updateFilter : MsgLike msg -> FilterOptions -> FilterOptions
-updateFilter msgLike filterOptions =
+updateFilter : (msg -> String) -> MsgLike msg -> FilterOptions -> FilterOptions
+updateFilter msgToString msgLike filterOptions =
   let
     str =
       case msgLike of
-        Message msg -> Debug.toString msg
+        Message msg -> msgToString  msg
         Init -> "" -- doesn't count as a filter
   in
     case String.words str of
@@ -217,14 +219,14 @@ mapHistory f model =
   }
 
 
-updateLazyAst : Model model msg -> Model model msg
-updateLazyAst model =
+updateLazyAst : (model -> String) -> (msg -> String) -> Model model msg -> Model model msg
+updateLazyAst modelToString msgToString model =
   case model.selectedMsg of
     Just id ->
       mapHistory
         (\item ->
           if item.id == id || item.id == id - 1 then
-            (updateLazyMsgAst << updateLazyModelAst) item
+            ((updateLazyMsgAst msgToString) << (updateLazyModelAst modelToString)) item
           else
             item
         )
@@ -233,14 +235,14 @@ updateLazyAst model =
       model
 
 
-updateLazyAstForWatch : Model model msg -> Model model msg
-updateLazyAstForWatch model =
+updateLazyAstForWatch : (model -> String) -> Model model msg -> Model model msg
+updateLazyAstForWatch modelToString model =
   case (model.watch, (Nel.head model.history).id) of
     (Just _, id) ->
       mapHistory
         (\item ->
           if item.id == id then
-            updateLazyModelAst item
+            updateLazyModelAst modelToString item
           else
             item
         )
@@ -249,14 +251,14 @@ updateLazyAstForWatch model =
       model
 
 
-updateLazyMsgAst : HistoryItem model msg -> HistoryItem model msg
-updateLazyMsgAst item =
+updateLazyMsgAst : (msg -> String) -> HistoryItem model msg -> HistoryItem model msg
+updateLazyMsgAst msgToString item =
   { item |
     lazyMsgAst =
       if item.lazyMsgAst == Nothing then
         case item.msg of
           Message msg ->
-            Just (Result.map (AST.attachId "@") <| Parser.parse (Debug.toString msg))
+            Just (Result.map (AST.attachId "@") <| Parser.parse (msgToString msg))
 
           _ ->
             Just (Err "")
@@ -265,12 +267,12 @@ updateLazyMsgAst item =
   }
 
 
-updateLazyModelAst : HistoryItem model msg -> HistoryItem model msg
-updateLazyModelAst item =
+updateLazyModelAst : (model -> String) -> HistoryItem model msg -> HistoryItem model msg
+updateLazyModelAst modelToString item =
   { item |
     lazyModelAst =
       if item.lazyModelAst == Nothing then
-        Just (Result.map (AST.attachId "@") <| Parser.parse (Debug.toString item.model))
+        Just (Result.map (AST.attachId "@") <| Parser.parse (modelToString item.model))
       else
         item.lazyModelAst
   }

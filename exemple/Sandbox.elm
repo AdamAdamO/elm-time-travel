@@ -5,9 +5,19 @@ import Html exposing (Html, button, div, text, input)
 import Html.Events exposing (onClick, onInput)
 import TimeTravel.Browser
 
+
+config = 
+  { msgToString = Debug.toString
+  , modelToString = Debug.toString
+  }
+
 main =
 --  Browser.sandbox { init = 0, update = update, view = view }
-  TimeTravel.Browser.sandbox { init = init, update = update, view = view }
+  TimeTravel.Browser.sandbox config
+    { init = init
+    , update = update
+    , view = view 
+    }
 
 type Msg = Increment Int | Decrement Int | Message String
 

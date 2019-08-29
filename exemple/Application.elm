@@ -11,11 +11,15 @@ import TimeTravel.Browser
 
 -- MAIN
 
+config = 
+  { msgToString = Debug.toString 
+  , modelToString = Debug.toString
+  }
 
 --main : Program () Model Msg
 main =
   --Browser.application
-  TimeTravel.Browser.application
+  TimeTravel.Browser.application config
     { init = init
     , view = view
     , update = update

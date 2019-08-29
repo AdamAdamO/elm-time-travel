@@ -8,9 +8,13 @@ import Browser.Events as Browser
 
 import TimeTravel.Browser as TimeTravel
 
+config =
+  { msgToString = Debug.toString
+  , modelToString = Debug.toString
+  }
 
 main =
-  TimeTravel.element
+  TimeTravel.element config
     { init = init
     , view = view
     , update = update

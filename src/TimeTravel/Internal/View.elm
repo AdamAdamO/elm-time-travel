@@ -22,20 +22,20 @@ import Html.Keyed as Keyed
 import Set exposing (Set)
 import Browser exposing (Document)
 
-view : (msg -> a) -> (Msg -> a) -> (model -> Html msg) -> Model model msg -> Html a
-view transformUserMsg transformDebuggerMsg userViewFunc model =
+view : (msg -> a) -> (Msg -> a) -> (msg -> String) -> (model -> Html msg) -> (model -> String) -> Model model msg -> Html a
+view transformUserMsg transformDebuggerMsg msgToString userViewFunc modelToString model =
   div
     []
     [ Html.map transformUserMsg (userView userViewFunc model)
-    , Html.map transformDebuggerMsg (debugView model)
+    , Html.map transformDebuggerMsg (debugView msgToString modelToString model)
     ]
 
-document : (msg -> a) -> (Msg -> a) -> (model -> Document msg) -> Model model msg -> Document a
-document transformUserMsg transformDebuggerMsg userDocumentFunc model =
+document : (msg -> a) -> (Msg -> a) -> (msg -> String) -> (model -> Document msg) -> (model -> String) -> Model model msg -> Document a
+document transformUserMsg transformDebuggerMsg msgToString userDocumentFunc modelToString model =
   let
     document_ = userDocument userDocumentFunc model
     body_ = List.map (Html.map transformUserMsg) document_.body
-    debug_ = [ Html.map transformDebuggerMsg (debugView model) ]
+    debug_ = [ Html.map transformDebuggerMsg (debugView msgToString modelToString model) ]
   in
     { title=document_.title
     , body = body_ ++ debug_
@@ -63,13 +63,13 @@ userDocument userDocument_ model =
       }
 
 
-debugView : Model model msg -> Html Msg
-debugView model =
-  (if model.minimized then minimizedDebugView else normalDebugView) model
+debugView : (msg -> String) -> (model -> String) -> Model model msg -> Html Msg
+debugView msgToString modelToString model =
+  (if model.minimized then minimizedDebugView else normalDebugView msgToString modelToString) model
 
 
-normalDebugView : Model model msg -> Html Msg
-normalDebugView model =
+normalDebugView : (msg -> String) -> (model -> String) -> Model model msg -> Html Msg
+normalDebugView msgToString modelToString model =
   div
     []
     [ resyncView model.sync
@@ -79,9 +79,10 @@ normalDebugView model =
         , msgListView
             model.filter
             model.selectedMsg
+            msgToString
             (Nel.toList model.history)
             (watchView model)
-            (detailView model)
+            (detailView msgToString modelToString model)
         ]
     ]
 
@@ -147,8 +148,8 @@ filterItemView (name, visible) =
     ]
 
 
-modelDetailView : Bool -> String -> Set AST.ASTId -> Maybe (Result String ASTX) -> model -> Html Msg
-modelDetailView fixedToLeft modelFilter expandedTree lazyModelAst userModel =
+modelDetailView : Bool -> String -> Set AST.ASTId -> Maybe (Result String ASTX) -> (model -> String) -> model -> Html Msg
+modelDetailView fixedToLeft modelFilter expandedTree lazyModelAst modelToString userModel =
   case lazyModelAst of
     Just (Ok ast) ->
       let
@@ -181,7 +182,7 @@ modelDetailView fixedToLeft modelFilter expandedTree lazyModelAst userModel =
     _ ->
       div 
         (S.styles S.modelView)
-        [ text (Debug.toString userModel) ]
+        [ text (modelToString userModel) ]
 
 
 modelFilterInput : String -> Html Msg
@@ -246,15 +247,15 @@ modelDetailTreeEachId id =
       ]
 
 
-msgListView : FilterOptions -> Maybe Id -> List (HistoryItem model msg) -> Html Msg -> Html Msg -> Html Msg
-msgListView filterOptions selectedMsg items watchView_ detailView_ =
+msgListView : FilterOptions -> Maybe Id -> (msg -> String) -> List (HistoryItem model msg) -> Html Msg -> Html Msg -> Html Msg
+msgListView filterOptions selectedMsg msgToString items watchView_ detailView_ =
   div
     []
     [ detailView_
     , watchView_
     , Keyed.node "div"
         (S.styles S.msgListView)
-        ( filterMapUntilLimit 60 (msgView filterOptions selectedMsg) items )
+        ( filterMapUntilLimit 60 (msgView filterOptions selectedMsg msgToString) items )
     ]
 
 
@@ -290,8 +291,8 @@ watchView model =
       text ""
 
 
-msgView : FilterOptions -> Maybe Id -> (HistoryItem model msg) -> Maybe (String, Html Msg)
-msgView filterOptions selectedMsg { id, msg, causedBy } =
+msgView : FilterOptions -> Maybe Id -> (msg -> String) -> (HistoryItem model msg) -> Maybe (String, Html Msg)
+msgView filterOptions selectedMsg msgToString { id, msg, causedBy } =
   let
     selected =
       case selectedMsg of
@@ -299,7 +300,7 @@ msgView filterOptions selectedMsg { id, msg, causedBy } =
         Nothing -> False
 
     str =
-      MsgLike.format msg
+      MsgLike.format msgToString msg
 
     visible =
       msg == Init ||
@@ -344,14 +345,14 @@ filterMapUntilLimitHelp result limit f list =
             filterMapUntilLimitHelp result limit f t
 
 
-detailView : Model model msg -> Html Msg
-detailView model =
+detailView : (msg -> String) -> (model -> String) -> Model model msg -> Html Msg
+detailView msgToString modelToString model =
   if not model.sync then
     let
       msgTreeView =
         case (model.selectedMsg, selectedMsgTree model) of
           (Just id, Just tree) ->
-            MsgTreeView.view SelectMsg id tree
+            MsgTreeView.view SelectMsg id msgToString tree
           _ ->
             text ""
 
@@ -392,6 +393,7 @@ detailView model =
                 model.modelFilter
                 model.expandedTree
                 item.lazyModelAst
+                modelToString
                 item.model ]
             _ ->
               []

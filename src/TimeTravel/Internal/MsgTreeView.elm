@@ -13,24 +13,24 @@ import Diff exposing (..)
 
 
 
-view : (Id -> m) -> Id -> RTree (HistoryItem model msg) -> Html m
-view onSelect selectedMsg tree =
+view : (Id -> m) -> Id -> (msg -> String) -> RTree (HistoryItem model msg) -> Html m
+view onSelect selectedMsg msgToString tree =
   div
     (S.styles S.msgTreeView)
-    (viewTree onSelect 0 selectedMsg tree)
+    (viewTree onSelect 0 selectedMsg msgToString tree)
 
 
-viewTree : (Id -> m) -> Int -> Int -> RTree (HistoryItem model msg) -> List (Html m)
-viewTree onSelect indent selectedMsg (Node item list) =
-  itemRow onSelect indent selectedMsg item ::
-    List.concatMap (viewTree onSelect (indent + 1) selectedMsg) list
+viewTree : (Id -> m) -> Int -> Int -> (msg -> String) -> RTree (HistoryItem model msg) -> List (Html m)
+viewTree onSelect indent selectedMsg msgToString (Node item list) =
+  itemRow onSelect indent selectedMsg msgToString item ::
+    List.concatMap (viewTree onSelect (indent + 1) selectedMsg msgToString) list
 
 
-itemRow : (Id -> m) -> Int -> Int -> HistoryItem model msg -> Html m
-itemRow onSelect indent selectedMsg item =
+itemRow : (Id -> m) -> Int -> Int -> (msg -> String) -> HistoryItem model msg -> Html m
+itemRow onSelect indent selectedMsg msgToString item =
   hover
     (S.msgTreeViewItemRowHover (selectedMsg == item.id))
     div
     ( onClick (onSelect item.id)
       :: S.styles (S.msgTreeViewItemRow (selectedMsg == item.id)))
-    [ text (String.repeat indent "    " ++ String.fromInt item.id ++ ": " ++ MsgLike.format item.msg) ]
+    [ text (String.repeat indent "    " ++ String.fromInt item.id ++ ": " ++ MsgLike.format msgToString item.msg) ]
