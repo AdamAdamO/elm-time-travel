@@ -2,18 +2,36 @@
 
 [![Build Status](https://travis-ci.org/jinjor/elm-time-travel.svg)](https://travis-ci.org/jinjor/elm-time-travel)
 
+This is upgraded to work with elm 0.19.
 An experimental debugger for Elm. See [DEMO](http://jinjor.github.io/elm-time-travel/)
 
 ## How to use
 
-Just use `TimeTravel.program` instead of `Html.program`.
+Just replace Browser.* with TimeTravel.*
+So,
+* Browser.sandbox become TimeTravel.sandbox
+* Browser.element become TimeTravel.element
+* Browser.document become TimeTravel.document
+* Browser.application become TimeTravel.application
+
+Also, because Debug.toString is no longer permitted in package, you need to pass a configuration object
+to TimeTravel.
+
+Currently, this configuration object contains only 2 function, but may have other parameter in future.
+See below for a sample of the configuration object.
+
 
 ```elm
-import TimeTravel.Html as TimeTravel
+import TimeTravel.Browser as TimeTravel
+
+config = 
+  { msgToString = Debug.toString
+  , modelToString = Debug.toString
+  }
 
 main =
-  -- Html.program
-  TimeTravel.program
+  -- Browser.element
+  TimeTravel.element config
     { init = init
     , view = view
     , update = update
