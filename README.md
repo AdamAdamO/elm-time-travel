@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/jinjor/elm-time-travel.svg)](https://travis-ci.org/jinjor/elm-time-travel)
 
-This is upgraded to work with elm 0.19.
+This is a fork of jinjor's elm-time-travel upgraded to work with elm 0.19.
 An experimental debugger for Elm. See [DEMO](http://jinjor.github.io/elm-time-travel/)
 
 ## How to use
@@ -14,11 +14,11 @@ So,
 * Browser.document become TimeTravel.document
 * Browser.application become TimeTravel.application
 
-Also, because Debug.toString is no longer permitted in package, you need to pass a configuration object
-to TimeTravel.
+Also, because Debug.toString is no longer permitted in package, you need to 
+pass it through a configuration object to TimeTravel.
 
-Currently, this configuration object contains only 2 function, but may have other parameter in future.
-See below for a sample of the configuration object.
+Currently, this configuration object contains only 2 function, but may have 
+other parameter in future.  See below for a sample of the configuration object.
 
 
 ```elm
