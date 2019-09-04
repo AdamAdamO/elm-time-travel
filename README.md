@@ -22,11 +22,12 @@ other parameter in future.  See below for a sample of the configuration object.
 
 
 ```elm
-import TimeTravel.Browser as TimeTravel
+import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
 
-config = 
-  { msgToString = Debug.toString
+config = {defaultConfig
+  | msgToString = Debug.toString
   , modelToString = Debug.toString
+  , startMinimized = True
   }
 
 main =
