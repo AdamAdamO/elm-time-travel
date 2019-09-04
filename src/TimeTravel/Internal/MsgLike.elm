@@ -2,7 +2,7 @@ module TimeTravel.Internal.MsgLike exposing
   ( MsgLike(..)
   , format
   )
-
+ 
 
 type MsgLike msg
   = Message msg

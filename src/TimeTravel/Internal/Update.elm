@@ -1,13 +1,13 @@
 module TimeTravel.Internal.Update exposing (update, updateAfterUserMsg)
 
 import TimeTravel.Internal.Model exposing 
-  ( OutgoingMsg, Msg(..), Model
+  ( OutgoingMsg, Msg(..), Model, Config
   , saveSetting, decodeSettings, selectFirstIfSync, futureToHistory
   , updateLazyAst, updateLazyDiff, updateLazyAstForWatch)
 import Set exposing (Set)
 
-update : (OutgoingMsg -> Cmd Never) -> (msg -> String) -> Msg -> (model -> String) -> Model model msg -> (Model model msg, Cmd Msg)
-update save msgToString message modelToString model =
+update : Config model msg -> (OutgoingMsg -> Cmd Never) -> Msg -> Model model msg -> (Model model msg, Cmd Msg)
+update config save message model =
   case message of
     Receive incomingMsg ->
       if incomingMsg.type_ == "load" then
@@ -68,7 +68,7 @@ update save msgToString message modelToString model =
           { model |
             selectedMsg = Just id
           , sync = False
-          } |> updateLazyAst modelToString msgToString |> updateLazyDiff
+          } |> updateLazyAst config |> updateLazyDiff
       in
         (newModel, Cmd.none)
 
@@ -120,7 +120,7 @@ update save msgToString message modelToString model =
           modelFilter = id
         , watch = Just id
         }
-        |> updateLazyAstForWatch modelToString
+        |> updateLazyAstForWatch config
       , Cmd.none)
 
     StopWatching ->
@@ -131,7 +131,7 @@ update save msgToString message modelToString model =
 
 toggleSet : comparable -> Set comparable -> Set comparable
 toggleSet a set =
-  (if Set.member a set then Set.remove else Set.insert) a set
+  if Set.member a set then Set.remove a set else Set.insert a set
 
 
 updateAfterUserMsg : (OutgoingMsg -> Cmd Never) -> Model model msg -> (Model model msg, Cmd Msg)

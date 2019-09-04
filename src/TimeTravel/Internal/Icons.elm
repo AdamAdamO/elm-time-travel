@@ -15,7 +15,7 @@ import Color
 
 sync : Bool -> Svg msg
 sync synchronized =
-  (if synchronized then pause else play_arrow) Color.white 24
+  if synchronized then pause Color.white 24 else play_arrow Color.white 24
 
 
 filter : Bool -> Svg msg
@@ -25,7 +25,7 @@ filter enabled =
 
 filterExpand : Bool -> Svg msg
 filterExpand expanded =
-  (if expanded then arrow_drop_up else arrow_drop_down) Color.white 24
+  if expanded then arrow_drop_up Color.white 24 else arrow_drop_down Color.white 24
 
 
 layout : Svg msg
@@ -40,7 +40,7 @@ toggleModelDetail =
 
 minimize : Bool -> Svg msg
 minimize minimized =
-  (if minimized then add else remove) Color.white 24
+  if minimized then add Color.white 24 else remove Color.white 24
 
 
 stopWatching : Svg msg

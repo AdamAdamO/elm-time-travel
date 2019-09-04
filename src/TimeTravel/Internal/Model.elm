@@ -1,5 +1,5 @@
 module TimeTravel.Internal.Model exposing 
-  ( HistoryItem, Id, FilterOptions, Settings
+  ( HistoryItem, Id, FilterOptions, Settings, Config
   , OutgoingMsg, IncomingMsg, Model, Msg(..)
   , updateLazyAst, updateLazyAstForWatch
   , updateLazyDiff, updateLazyDiffHelp
@@ -25,6 +25,12 @@ import Json.Decode as Decode exposing (field, Decoder)
 import Json.Encode as Encode
 
 import Diff exposing (Change, diffLines)
+
+type alias Config model msg =
+  { msgToString: msg -> String
+  , modelToString: model -> String
+  , startMinimized: Bool
+  }
 
 type alias HistoryItem model msg =
   { id : Id
@@ -140,14 +146,13 @@ selectedItem model =
 
 
 updateOnIncomingUserMsg :
-     ((Id, msg) -> parentMsg)
+  Config model msg
+  -> ((Id, msg) -> parentMsg)
   -> (msg -> model -> (model, Cmd msg))
   -> (Maybe Id, msg)
-  -> (msg -> String)
-  -> (model -> String)
   -> Model model msg
   -> (Model model msg, Cmd parentMsg)
-updateOnIncomingUserMsg transformMsg update (causedBy, msg) msgToString modelToString model =
+updateOnIncomingUserMsg config transformMsg update (causedBy, msg) model =
   let
     (Nel last past) = model.history
 
@@ -158,7 +163,7 @@ updateOnIncomingUserMsg transformMsg update (causedBy, msg) msgToString modelToS
     nextItem = newItem model.msgId megLike causedBy newRawUserModel
 
     newModel = { model 
-      | filter = updateFilter msgToString megLike model.filter
+      | filter = updateFilter config megLike model.filter
       , msgId = model.msgId + 1
       , future =
           if not model.sync then
@@ -170,7 +175,7 @@ updateOnIncomingUserMsg transformMsg update (causedBy, msg) msgToString modelToS
             Nel.cons nextItem model.history
           else
             model.history
-      } |> selectFirstIfSync |> updateLazyAstForWatch modelToString
+      } |> selectFirstIfSync |> updateLazyAstForWatch config
     cmds = 
       [ Cmd.map transformMsg (Cmd.map (createTuple model.msgId) userCmd)
       ]
@@ -178,12 +183,12 @@ updateOnIncomingUserMsg transformMsg update (causedBy, msg) msgToString modelToS
     (newModel , Cmd.batch cmds)
 
 
-updateFilter : (msg -> String) -> MsgLike msg -> FilterOptions -> FilterOptions
-updateFilter msgToString msgLike filterOptions =
+updateFilter : Config model msg -> MsgLike msg -> FilterOptions -> FilterOptions
+updateFilter config msgLike filterOptions =
   let
     str =
       case msgLike of
-        Message msg -> msgToString  msg
+        Message msg -> config.msgToString  msg
         Init -> "" -- doesn't count as a filter
   in
     case String.words str of
@@ -219,14 +224,14 @@ mapHistory f model =
   }
 
 
-updateLazyAst : (model -> String) -> (msg -> String) -> Model model msg -> Model model msg
-updateLazyAst modelToString msgToString model =
+updateLazyAst : Config model msg -> Model model msg -> Model model msg
+updateLazyAst config model =
   case model.selectedMsg of
     Just id ->
       mapHistory
         (\item ->
           if item.id == id || item.id == id - 1 then
-            ((updateLazyMsgAst msgToString) << (updateLazyModelAst modelToString)) item
+            (updateLazyMsgAst config << updateLazyModelAst config) item
           else
             item
         )
@@ -235,14 +240,14 @@ updateLazyAst modelToString msgToString model =
       model
 
 
-updateLazyAstForWatch : (model -> String) -> Model model msg -> Model model msg
-updateLazyAstForWatch modelToString model =
+updateLazyAstForWatch : Config model msg -> Model model msg -> Model model msg
+updateLazyAstForWatch config model =
   case (model.watch, (Nel.head model.history).id) of
     (Just _, id) ->
       mapHistory
         (\item ->
           if item.id == id then
-            updateLazyModelAst modelToString item
+            updateLazyModelAst config item
           else
             item
         )
@@ -251,14 +256,14 @@ updateLazyAstForWatch modelToString model =
       model
 
 
-updateLazyMsgAst : (msg -> String) -> HistoryItem model msg -> HistoryItem model msg
-updateLazyMsgAst msgToString item =
+updateLazyMsgAst : Config model msg -> HistoryItem model msg -> HistoryItem model msg
+updateLazyMsgAst config item =
   { item |
     lazyMsgAst =
       if item.lazyMsgAst == Nothing then
         case item.msg of
           Message msg ->
-            Just (Result.map (AST.attachId "@") <| Parser.parse (msgToString msg))
+            Just (Result.map (AST.attachId "@") <| Parser.parse (config.msgToString msg))
 
           _ ->
             Just (Err "")
@@ -267,12 +272,12 @@ updateLazyMsgAst msgToString item =
   }
 
 
-updateLazyModelAst : (model -> String) -> HistoryItem model msg -> HistoryItem model msg
-updateLazyModelAst modelToString item =
+updateLazyModelAst : Config model msg -> HistoryItem model msg -> HistoryItem model msg
+updateLazyModelAst config item =
   { item |
     lazyModelAst =
       if item.lazyModelAst == Nothing then
-        Just (Result.map (AST.attachId "@") <| Parser.parse (modelToString item.model))
+        Just (Result.map (AST.attachId "@") <| Parser.parse (config.modelToString item.model))
       else
         item.lazyModelAst
   }

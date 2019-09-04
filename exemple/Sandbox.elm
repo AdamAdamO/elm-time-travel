@@ -3,12 +3,13 @@ module Sandbox exposing (main)
 import Browser
 import Html exposing (Html, button, div, text, input)
 import Html.Events exposing (onClick, onInput)
-import TimeTravel.Browser
+import TimeTravel.Browser exposing (defaultConfig)
 
 
-config = 
-  { msgToString = Debug.toString
+config = {defaultConfig
+  | msgToString = Debug.toString
   , modelToString = Debug.toString
+  , startMinimized = True
   }
 
 main =

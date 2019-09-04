@@ -6,13 +6,13 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Url
 
-import TimeTravel.Browser
+import TimeTravel.Browser exposing (defaultConfig)
 
 
 -- MAIN
 
-config = 
-  { msgToString = Debug.toString 
+config = {defaultConfig
+  | msgToString = Debug.toString 
   , modelToString = Debug.toString
   }
 

@@ -6,11 +6,11 @@ import Browser
 import Browser.Navigation as Navigation
 import Url
 
-import TimeTravel.Browser as TimeTravel
+import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
 
 
-config = 
-  { msgToString = Debug.toString 
+config = {defaultConfig
+  | msgToString = Debug.toString 
   , modelToString = Debug.toString
   }
 

@@ -11,9 +11,10 @@ styles styles_ =
   
   List.map style styles_
 
+zIndex: { modelDetailView: String, debugView: String, resyncView: String }
 zIndex = { modelDetailView = "2147483646", debugView = "2147483646", resyncView = "2147483645" }
 
-
+darkTextColor: String
 darkTextColor = "#999"
 
 

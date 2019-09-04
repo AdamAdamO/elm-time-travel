@@ -6,10 +6,10 @@ import Html.Events exposing (on)
 import Json.Decode as Decode exposing (field)
 import Browser.Events as Browser
 
-import TimeTravel.Browser as TimeTravel
+import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
 
-config =
-  { msgToString = Debug.toString
+config = {defaultConfig
+  | msgToString = Debug.toString
   , modelToString = Debug.toString
   }
 

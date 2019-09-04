@@ -3,10 +3,10 @@ module LargeModel exposing (main)
 import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
 
-import TimeTravel.Browser as TimeTravel
+import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
 
-config = 
-  { msgToString = Debug.toString
+config = {defaultConfig
+  | msgToString = Debug.toString
   , modelToString = Debug.toString
   }
 

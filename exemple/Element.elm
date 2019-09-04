@@ -5,12 +5,12 @@ import Html exposing (..)
 import Task
 import Time
 
-import TimeTravel.Browser
+import TimeTravel.Browser exposing (defaultConfig)
 
 
 -- MAIN
-config =
-  { msgToString = Debug.toString
+config = {defaultConfig
+  | msgToString = Debug.toString
   , modelToString = Debug.toString
   }
 

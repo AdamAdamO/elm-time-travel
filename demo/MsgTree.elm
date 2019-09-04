@@ -4,7 +4,7 @@ import Html exposing (Html, div, text, button, hr)
 import Html.Events exposing (onClick)
 import Task
 
-import TimeTravel.Browser as TimeTravel
+import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
 
 import Dict exposing (Dict)
 import Process
@@ -14,8 +14,8 @@ import Process
 --
 -- port incoming : (TimeTravel.IncomingMsg -> msg) -> Sub msg
 
-config = 
-  { msgToString = Debug.toString
+config = {defaultConfig
+  | msgToString = Debug.toString
   , modelToString = Debug.toString
   }
 

@@ -4925,7 +4925,18 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 	});
 var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$core$Debug$toString = _Debug_toString;
-var savardd$elm_time_travel$Sandbox$config = {modelToString: elm$core$Debug$toString, msgToString: elm$core$Debug$toString};
+var savardd$elm_time_travel$TimeTravel$Browser$defaultConfig = {
+	modelToString: function (_n0) {
+		return '';
+	},
+	msgToString: function (_n1) {
+		return '';
+	},
+	startMinimized: false
+};
+var savardd$elm_time_travel$Sandbox$config = _Utils_update(
+	savardd$elm_time_travel$TimeTravel$Browser$defaultConfig,
+	{modelToString: elm$core$Debug$toString, msgToString: elm$core$Debug$toString, startMinimized: true});
 var savardd$elm_time_travel$Sandbox$Increment = function (a) {
 	return {$: 'Increment', a: a};
 };
@@ -5444,25 +5455,30 @@ var savardd$elm_time_travel$TimeTravel$Internal$Model$init = function (model) {
 		watch: elm$core$Maybe$Nothing
 	};
 };
-var savardd$elm_time_travel$TimeTravel$Browser$wrapInit = function (_n0) {
-	var model = _n0.a;
-	var cmd = _n0.b;
-	return _Utils_Tuple2(
-		savardd$elm_time_travel$TimeTravel$Internal$Model$init(model),
-		elm$core$Platform$Cmd$batch(
-			_List_fromArray(
-				[
-					A2(
-					elm$core$Platform$Cmd$map,
-					function (msg) {
-						return savardd$elm_time_travel$TimeTravel$Browser$UserMsg(
-							_Utils_Tuple2(
-								elm$core$Maybe$Just(0),
-								msg));
-					},
-					cmd)
-				])));
-};
+var savardd$elm_time_travel$TimeTravel$Browser$wrapInit = F2(
+	function (config, _n0) {
+		var model = _n0.a;
+		var cmd = _n0.b;
+		var model_ = savardd$elm_time_travel$TimeTravel$Internal$Model$init(model);
+		var newModel = _Utils_update(
+			model_,
+			{minimized: config.startMinimized});
+		return _Utils_Tuple2(
+			newModel,
+			elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						A2(
+						elm$core$Platform$Cmd$map,
+						function (msg) {
+							return savardd$elm_time_travel$TimeTravel$Browser$UserMsg(
+								_Utils_Tuple2(
+									elm$core$Maybe$Just(0),
+									msg));
+						},
+						cmd)
+					])));
+	});
 var elm$core$Basics$composeL = F3(
 	function (g, f, x) {
 		return g(
@@ -5530,11 +5546,11 @@ var elm$core$List$any = F2(
 	});
 var elm$core$String$words = _String_words;
 var savardd$elm_time_travel$TimeTravel$Internal$Model$updateFilter = F3(
-	function (msgToString, msgLike, filterOptions) {
+	function (config, msgLike, filterOptions) {
 		var str = function () {
 			if (msgLike.$ === 'Message') {
 				var msg = msgLike.a;
-				return msgToString(msg);
+				return config.msgToString(msg);
 			} else {
 				return '';
 			}
@@ -6292,7 +6308,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$Parser$Parser$parse = function (
 	}
 };
 var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyModelAst = F2(
-	function (modelToString, item) {
+	function (config, item) {
 		return _Utils_update(
 			item,
 			{
@@ -6301,11 +6317,11 @@ var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyModelAst = F2(
 						elm$core$Result$map,
 						savardd$elm_time_travel$TimeTravel$Internal$Parser$AST$attachId('@'),
 						savardd$elm_time_travel$TimeTravel$Internal$Parser$Parser$parse(
-							modelToString(item.model)))) : item.lazyModelAst
+							config.modelToString(item.model)))) : item.lazyModelAst
 			});
 	});
 var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyAstForWatch = F2(
-	function (modelToString, model) {
+	function (config, model) {
 		var _n0 = _Utils_Tuple2(
 			model.watch,
 			savardd$elm_time_travel$TimeTravel$Internal$Util$Nel$head(model.history).id);
@@ -6314,7 +6330,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyAstForWatch = F2
 			return A2(
 				savardd$elm_time_travel$TimeTravel$Internal$Model$mapHistory,
 				function (item) {
-					return _Utils_eq(item.id, id) ? A2(savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyModelAst, modelToString, item) : item;
+					return _Utils_eq(item.id, id) ? A2(savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyModelAst, config, item) : item;
 				},
 				model);
 		} else {
@@ -6333,8 +6349,8 @@ var savardd$elm_time_travel$TimeTravel$Internal$Util$Nel$cons = F2(
 			_new,
 			A2(elm$core$List$cons, h, t));
 	});
-var savardd$elm_time_travel$TimeTravel$Internal$Model$updateOnIncomingUserMsg = F6(
-	function (transformMsg, update, _n0, msgToString, modelToString, model) {
+var savardd$elm_time_travel$TimeTravel$Internal$Model$updateOnIncomingUserMsg = F5(
+	function (config, transformMsg, update, _n0, model) {
 		var causedBy = _n0.a;
 		var msg = _n0.b;
 		var megLike = savardd$elm_time_travel$TimeTravel$Internal$MsgLike$Message(msg);
@@ -6347,12 +6363,12 @@ var savardd$elm_time_travel$TimeTravel$Internal$Model$updateOnIncomingUserMsg = 
 		var nextItem = A4(savardd$elm_time_travel$TimeTravel$Internal$Model$newItem, model.msgId, megLike, causedBy, newRawUserModel);
 		var newModel = A2(
 			savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyAstForWatch,
-			modelToString,
+			config,
 			savardd$elm_time_travel$TimeTravel$Internal$Model$selectFirstIfSync(
 				_Utils_update(
 					model,
 					{
-						filter: A3(savardd$elm_time_travel$TimeTravel$Internal$Model$updateFilter, msgToString, megLike, model.filter),
+						filter: A3(savardd$elm_time_travel$TimeTravel$Internal$Model$updateFilter, config, megLike, model.filter),
 						future: (!model.sync) ? A2(elm$core$List$cons, nextItem, model.future) : model.future,
 						history: model.sync ? A2(savardd$elm_time_travel$TimeTravel$Internal$Util$Nel$cons, nextItem, model.history) : model.history,
 						msgId: model.msgId + 1
@@ -6489,7 +6505,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$Model$saveSetting = F2(
 				}));
 	});
 var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyMsgAst = F2(
-	function (msgToString, item) {
+	function (config, item) {
 		return _Utils_update(
 			item,
 			{
@@ -6503,7 +6519,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyMsgAst = F2(
 									elm$core$Result$map,
 									savardd$elm_time_travel$TimeTravel$Internal$Parser$AST$attachId('@'),
 									savardd$elm_time_travel$TimeTravel$Internal$Parser$Parser$parse(
-										msgToString(msg))));
+										config.msgToString(msg))));
 						} else {
 							return elm$core$Maybe$Just(
 								elm$core$Result$Err(''));
@@ -6514,8 +6530,8 @@ var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyMsgAst = F2(
 				}()
 			});
 	});
-var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyAst = F3(
-	function (modelToString, msgToString, model) {
+var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyAst = F2(
+	function (config, model) {
 		var _n0 = model.selectedMsg;
 		if (_n0.$ === 'Just') {
 			var id = _n0.a;
@@ -6524,8 +6540,8 @@ var savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyAst = F3(
 				function (item) {
 					return (_Utils_eq(item.id, id) || _Utils_eq(item.id, id - 1)) ? A2(
 						elm$core$Basics$composeL,
-						savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyMsgAst(msgToString),
-						savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyModelAst(modelToString))(item) : item;
+						savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyMsgAst(config),
+						savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyModelAst(config))(item) : item;
 				},
 				model);
 		} else {
@@ -7966,13 +7982,10 @@ var elm$core$Set$remove = F2(
 	});
 var savardd$elm_time_travel$TimeTravel$Internal$Update$toggleSet = F2(
 	function (a, set) {
-		return A2(
-			A2(elm$core$Set$member, a, set) ? elm$core$Set$remove : elm$core$Set$insert,
-			a,
-			set);
+		return A2(elm$core$Set$member, a, set) ? A2(elm$core$Set$remove, a, set) : A2(elm$core$Set$insert, a, set);
 	});
-var savardd$elm_time_travel$TimeTravel$Internal$Update$update = F5(
-	function (save, msgToString, message, modelToString, model) {
+var savardd$elm_time_travel$TimeTravel$Internal$Update$update = F4(
+	function (config, save, message, model) {
 		switch (message.$) {
 			case 'Receive':
 				var incomingMsg = message.a;
@@ -8034,10 +8047,9 @@ var savardd$elm_time_travel$TimeTravel$Internal$Update$update = F5(
 			case 'SelectMsg':
 				var id = message.a;
 				var newModel = savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyDiff(
-					A3(
+					A2(
 						savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyAst,
-						modelToString,
-						msgToString,
+						config,
 						_Utils_update(
 							model,
 							{
@@ -8107,7 +8119,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$Update$update = F5(
 				return _Utils_Tuple2(
 					A2(
 						savardd$elm_time_travel$TimeTravel$Internal$Model$updateLazyAstForWatch,
-						modelToString,
+						config,
 						_Utils_update(
 							model,
 							{
@@ -8133,30 +8145,24 @@ var savardd$elm_time_travel$TimeTravel$Internal$Update$updateAfterUserMsg = F2(
 						A2(savardd$elm_time_travel$TimeTravel$Internal$Model$saveSetting, save, model)
 					])));
 	});
-var savardd$elm_time_travel$TimeTravel$Browser$wrapUpdate = F6(
-	function (update, outgoingMsg, msgToString, msg, modelToString, model) {
+var savardd$elm_time_travel$TimeTravel$Browser$wrapUpdate = F5(
+	function (config, update, outgoingMsg, msg, model) {
+		var toUserMessage = function (_n4) {
+			var id_ = _n4.a;
+			var msg_ = _n4.b;
+			return savardd$elm_time_travel$TimeTravel$Browser$UserMsg(
+				_Utils_Tuple2(
+					elm$core$Maybe$Just(id_),
+					msg_));
+		};
 		if (msg.$ === 'UserMsg') {
 			var msgWithId = msg.a;
-			var _n1 = A6(
-				savardd$elm_time_travel$TimeTravel$Internal$Model$updateOnIncomingUserMsg,
-				function (_n2) {
-					var id = _n2.a;
-					var msg_ = _n2.b;
-					return savardd$elm_time_travel$TimeTravel$Browser$UserMsg(
-						_Utils_Tuple2(
-							elm$core$Maybe$Just(id),
-							msg_));
-				},
-				update,
-				msgWithId,
-				msgToString,
-				modelToString,
-				model);
+			var _n1 = A5(savardd$elm_time_travel$TimeTravel$Internal$Model$updateOnIncomingUserMsg, config, toUserMessage, update, msgWithId, model);
 			var m = _n1.a;
 			var c1 = _n1.b;
-			var _n3 = A2(savardd$elm_time_travel$TimeTravel$Internal$Update$updateAfterUserMsg, outgoingMsg, m);
-			var m_ = _n3.a;
-			var c2 = _n3.b;
+			var _n2 = A2(savardd$elm_time_travel$TimeTravel$Internal$Update$updateAfterUserMsg, outgoingMsg, m);
+			var m_ = _n2.a;
+			var c2 = _n2.b;
 			return _Utils_Tuple2(
 				m_,
 				elm$core$Platform$Cmd$batch(
@@ -8167,9 +8173,9 @@ var savardd$elm_time_travel$TimeTravel$Browser$wrapUpdate = F6(
 						])));
 		} else {
 			var msg_ = msg.a;
-			var _n4 = A5(savardd$elm_time_travel$TimeTravel$Internal$Update$update, outgoingMsg, msgToString, msg_, modelToString, model);
-			var m = _n4.a;
-			var c = _n4.b;
+			var _n3 = A4(savardd$elm_time_travel$TimeTravel$Internal$Update$update, config, outgoingMsg, msg_, model);
+			var m = _n3.a;
+			var c = _n3.b;
 			return _Utils_Tuple2(
 				m,
 				elm$core$Platform$Cmd$batch(
@@ -8265,10 +8271,7 @@ var danmarcab$material_icons$Material$Icons$Content$remove = A2(
 			_List_Nil)
 		]));
 var savardd$elm_time_travel$TimeTravel$Internal$Icons$minimize = function (minimized) {
-	return A2(
-		minimized ? danmarcab$material_icons$Material$Icons$Content$add : danmarcab$material_icons$Material$Icons$Content$remove,
-		avh4$elm_color$Color$white,
-		24);
+	return minimized ? A2(danmarcab$material_icons$Material$Icons$Content$add, avh4$elm_color$Color$white, 24) : A2(danmarcab$material_icons$Material$Icons$Content$remove, avh4$elm_color$Color$white, 24);
 };
 var savardd$elm_time_travel$TimeTravel$Internal$Model$ToggleMinimize = {$: 'ToggleMinimize'};
 var savardd$elm_time_travel$TimeTravel$Internal$Styles$debugViewTheme = _List_fromArray(
@@ -9080,7 +9083,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$Styles$msgTreeViewItemRowHover =
 		]);
 };
 var savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$itemRow = F5(
-	function (onSelect, indent, selectedMsg, msgToString, item) {
+	function (config, onSelect, indent, selectedMsg, item) {
 		return A4(
 			savardd$elm_time_travel$TimeTravel$Internal$InlineHover$hover,
 			savardd$elm_time_travel$TimeTravel$Internal$Styles$msgTreeViewItemRowHover(
@@ -9096,19 +9099,19 @@ var savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$itemRow = F5(
 			_List_fromArray(
 				[
 					elm$html$Html$text(
-					A2(elm$core$String$repeat, indent, '    ') + (elm$core$String$fromInt(item.id) + (': ' + A2(savardd$elm_time_travel$TimeTravel$Internal$MsgLike$format, msgToString, item.msg))))
+					A2(elm$core$String$repeat, indent, '    ') + (elm$core$String$fromInt(item.id) + (': ' + A2(savardd$elm_time_travel$TimeTravel$Internal$MsgLike$format, config.msgToString, item.msg))))
 				]));
 	});
 var savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$viewTree = F5(
-	function (onSelect, indent, selectedMsg, msgToString, _n0) {
+	function (config, onSelect, indent, selectedMsg, _n0) {
 		var item = _n0.a;
 		var list = _n0.b;
 		return A2(
 			elm$core$List$cons,
-			A5(savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$itemRow, onSelect, indent, selectedMsg, msgToString, item),
+			A5(savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$itemRow, config, onSelect, indent, selectedMsg, item),
 			A2(
 				elm$core$List$concatMap,
-				A4(savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$viewTree, onSelect, indent + 1, selectedMsg, msgToString),
+				A4(savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$viewTree, config, onSelect, indent + 1, selectedMsg),
 				list));
 	});
 var savardd$elm_time_travel$TimeTravel$Internal$Styles$panelBorder = _List_fromArray(
@@ -9119,11 +9122,11 @@ var savardd$elm_time_travel$TimeTravel$Internal$Styles$msgTreeView = _Utils_ap(
 	savardd$elm_time_travel$TimeTravel$Internal$Styles$panel(true),
 	savardd$elm_time_travel$TimeTravel$Internal$Styles$panelBorder);
 var savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$view = F4(
-	function (onSelect, selectedMsg, msgToString, tree) {
+	function (config, onSelect, selectedMsg, tree) {
 		return A2(
 			elm$html$Html$div,
 			savardd$elm_time_travel$TimeTravel$Internal$Styles$styles(savardd$elm_time_travel$TimeTravel$Internal$Styles$msgTreeView),
-			A5(savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$viewTree, onSelect, 0, selectedMsg, msgToString, tree));
+			A5(savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$viewTree, config, onSelect, 0, selectedMsg, tree));
 	});
 var savardd$elm_time_travel$TimeTravel$Internal$Styles$detailTab = function (active) {
 	return _Utils_ap(
@@ -9660,7 +9663,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$modelFilterInput = function
 		_List_Nil);
 };
 var savardd$elm_time_travel$TimeTravel$Internal$View$modelDetailView = F6(
-	function (fixedToLeft, modelFilter, expandedTree, lazyModelAst, modelToString, userModel) {
+	function (fixedToLeft, modelFilter, expandedTree, lazyModelAst, config, userModel) {
 		if ((lazyModelAst.$ === 'Just') && (lazyModelAst.a.$ === 'Ok')) {
 			var ast = lazyModelAst.a.a;
 			var filteredAst = function () {
@@ -9704,12 +9707,12 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$modelDetailView = F6(
 				_List_fromArray(
 					[
 						elm$html$Html$text(
-						modelToString(userModel))
+						config.modelToString(userModel))
 					]));
 		}
 	});
-var savardd$elm_time_travel$TimeTravel$Internal$View$detailView = F3(
-	function (msgToString, modelToString, model) {
+var savardd$elm_time_travel$TimeTravel$Internal$View$detailView = F2(
+	function (config, model) {
 		if (!model.sync) {
 			var msgTreeView = function () {
 				var _n4 = _Utils_Tuple2(
@@ -9718,7 +9721,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$detailView = F3(
 				if ((_n4.a.$ === 'Just') && (_n4.b.$ === 'Just')) {
 					var id = _n4.a.a;
 					var tree = _n4.b.a;
-					return A4(savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$view, savardd$elm_time_travel$TimeTravel$Internal$Model$SelectMsg, id, msgToString, tree);
+					return A4(savardd$elm_time_travel$TimeTravel$Internal$MsgTreeView$view, config, savardd$elm_time_travel$TimeTravel$Internal$Model$SelectMsg, id, tree);
 				} else {
 					return elm$html$Html$text('');
 				}
@@ -9778,7 +9781,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$detailView = F3(
 						var item = _n0.a;
 						return _List_fromArray(
 							[
-								A6(savardd$elm_time_travel$TimeTravel$Internal$View$modelDetailView, model.fixedToLeft, model.modelFilter, model.expandedTree, item.lazyModelAst, modelToString, item.model)
+								A6(savardd$elm_time_travel$TimeTravel$Internal$View$modelDetailView, model.fixedToLeft, model.modelFilter, model.expandedTree, item.lazyModelAst, config, item.model)
 							]);
 					} else {
 						return _List_Nil;
@@ -9824,10 +9827,7 @@ var danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_up = A2(
 			_List_Nil)
 		]));
 var savardd$elm_time_travel$TimeTravel$Internal$Icons$filterExpand = function (expanded) {
-	return A2(
-		expanded ? danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_up : danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_down,
-		avh4$elm_color$Color$white,
-		24);
+	return expanded ? A2(danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_up, avh4$elm_color$Color$white, 24) : A2(danmarcab$material_icons$Material$Icons$Navigation$arrow_drop_down, avh4$elm_color$Color$white, 24);
 };
 var danmarcab$material_icons$Material$Icons$Action$swap_horiz = A2(
 	danmarcab$material_icons$Material$Icons$Internal$icon,
@@ -9870,10 +9870,7 @@ var danmarcab$material_icons$Material$Icons$Av$play_arrow = A2(
 			_List_Nil)
 		]));
 var savardd$elm_time_travel$TimeTravel$Internal$Icons$sync = function (_synchronized) {
-	return A2(
-		_synchronized ? danmarcab$material_icons$Material$Icons$Av$pause : danmarcab$material_icons$Material$Icons$Av$play_arrow,
-		avh4$elm_color$Color$white,
-		24);
+	return _synchronized ? A2(danmarcab$material_icons$Material$Icons$Av$pause, avh4$elm_color$Color$white, 24) : A2(danmarcab$material_icons$Material$Icons$Av$play_arrow, avh4$elm_color$Color$white, 24);
 };
 var savardd$elm_time_travel$TimeTravel$Internal$Model$ToggleExpand = {$: 'ToggleExpand'};
 var savardd$elm_time_travel$TimeTravel$Internal$Model$ToggleLayout = {$: 'ToggleLayout'};
@@ -10076,11 +10073,11 @@ var savardd$elm_time_travel$TimeTravel$Internal$Styles$msgViewHover = function (
 		]);
 };
 var savardd$elm_time_travel$TimeTravel$Internal$View$msgView = F4(
-	function (filterOptions, selectedMsg, msgToString, _n0) {
+	function (config, filterOptions, selectedMsg, _n0) {
 		var id = _n0.id;
 		var msg = _n0.msg;
 		var causedBy = _n0.causedBy;
-		var str = A2(savardd$elm_time_travel$TimeTravel$Internal$MsgLike$format, msgToString, msg);
+		var str = A2(savardd$elm_time_travel$TimeTravel$Internal$MsgLike$format, config.msgToString, msg);
 		var visible = _Utils_eq(msg, savardd$elm_time_travel$TimeTravel$Internal$MsgLike$Init) || function () {
 			var _n2 = elm$core$String$words(str);
 			if (_n2.b) {
@@ -10129,7 +10126,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$msgView = F4(
 						])))) : elm$core$Maybe$Nothing;
 	});
 var savardd$elm_time_travel$TimeTravel$Internal$View$msgListView = F6(
-	function (filterOptions, selectedMsg, msgToString, items, watchView_, detailView_) {
+	function (config, filterOptions, selectedMsg, items, watchView_, detailView_) {
 		return A2(
 			elm$html$Html$div,
 			_List_Nil,
@@ -10144,7 +10141,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$msgListView = F6(
 					A3(
 						savardd$elm_time_travel$TimeTravel$Internal$View$filterMapUntilLimit,
 						60,
-						A3(savardd$elm_time_travel$TimeTravel$Internal$View$msgView, filterOptions, selectedMsg, msgToString),
+						A3(savardd$elm_time_travel$TimeTravel$Internal$View$msgView, config, filterOptions, selectedMsg),
 						items))
 				]));
 	});
@@ -10266,8 +10263,8 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$watchView = function (model
 		return elm$html$Html$text('');
 	}
 };
-var savardd$elm_time_travel$TimeTravel$Internal$View$normalDebugView = F3(
-	function (msgToString, modelToString, model) {
+var savardd$elm_time_travel$TimeTravel$Internal$View$normalDebugView = F2(
+	function (config, model) {
 		return A2(
 			elm$html$Html$div,
 			_List_Nil,
@@ -10283,18 +10280,18 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$normalDebugView = F3(
 							A4(savardd$elm_time_travel$TimeTravel$Internal$View$headerView, model.fixedToLeft, model.sync, model.expand, model.filter),
 							A6(
 							savardd$elm_time_travel$TimeTravel$Internal$View$msgListView,
+							config,
 							model.filter,
 							model.selectedMsg,
-							msgToString,
 							savardd$elm_time_travel$TimeTravel$Internal$Util$Nel$toList(model.history),
 							savardd$elm_time_travel$TimeTravel$Internal$View$watchView(model),
-							A3(savardd$elm_time_travel$TimeTravel$Internal$View$detailView, msgToString, modelToString, model))
+							A2(savardd$elm_time_travel$TimeTravel$Internal$View$detailView, config, model))
 						]))
 				]));
 	});
-var savardd$elm_time_travel$TimeTravel$Internal$View$debugView = F3(
-	function (msgToString, modelToString, model) {
-		return (model.minimized ? savardd$elm_time_travel$TimeTravel$Internal$View$minimizedDebugView : A2(savardd$elm_time_travel$TimeTravel$Internal$View$normalDebugView, msgToString, modelToString))(model);
+var savardd$elm_time_travel$TimeTravel$Internal$View$debugView = F2(
+	function (config, model) {
+		return model.minimized ? savardd$elm_time_travel$TimeTravel$Internal$View$minimizedDebugView(model) : A2(savardd$elm_time_travel$TimeTravel$Internal$View$normalDebugView, config, model);
 	});
 var savardd$elm_time_travel$TimeTravel$Internal$View$userView = F2(
 	function (userView_, model) {
@@ -10306,8 +10303,8 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$userView = F2(
 			return elm$html$Html$text('Error: Unable to render');
 		}
 	});
-var savardd$elm_time_travel$TimeTravel$Internal$View$view = F6(
-	function (transformUserMsg, transformDebuggerMsg, msgToString, userViewFunc, modelToString, model) {
+var savardd$elm_time_travel$TimeTravel$Internal$View$view = F5(
+	function (config, transformUserMsg, transformDebuggerMsg, userViewFunc, model) {
 		return A2(
 			elm$html$Html$div,
 			_List_Nil,
@@ -10320,7 +10317,7 @@ var savardd$elm_time_travel$TimeTravel$Internal$View$view = F6(
 					A2(
 					elm$html$Html$map,
 					transformDebuggerMsg,
-					A3(savardd$elm_time_travel$TimeTravel$Internal$View$debugView, msgToString, modelToString, model))
+					A2(savardd$elm_time_travel$TimeTravel$Internal$View$debugView, config, model))
 				]));
 	});
 var savardd$elm_time_travel$TimeTravel$Browser$wrap = F2(
@@ -10333,27 +10330,28 @@ var savardd$elm_time_travel$TimeTravel$Browser$wrap = F2(
 		var update = _n1.update;
 		var subscriptions = _n1.subscriptions;
 		var view_ = function (model) {
-			return A6(
+			return A5(
 				savardd$elm_time_travel$TimeTravel$Internal$View$view,
+				config,
 				function (c) {
 					return savardd$elm_time_travel$TimeTravel$Browser$UserMsg(
 						_Utils_Tuple2(elm$core$Maybe$Nothing, c));
 				},
 				savardd$elm_time_travel$TimeTravel$Browser$DebuggerMsg,
-				config.msgToString,
 				view,
-				config.modelToString,
 				model);
 		};
 		var update_ = F2(
 			function (msg, model) {
-				return A6(savardd$elm_time_travel$TimeTravel$Browser$wrapUpdate, update, outgoingMsg, config.msgToString, msg, config.modelToString, model);
+				return A5(savardd$elm_time_travel$TimeTravel$Browser$wrapUpdate, config, update, outgoingMsg, msg, model);
 			});
 		var subscriptions_ = function (model) {
 			return A3(savardd$elm_time_travel$TimeTravel$Browser$wrapSubscriptions, subscriptions, incomingMsg, model);
 		};
 		var init_ = function (flags) {
-			return savardd$elm_time_travel$TimeTravel$Browser$wrapInit(
+			return A2(
+				savardd$elm_time_travel$TimeTravel$Browser$wrapInit,
+				config,
 				init(flags));
 		};
 		return {init: init_, subscriptions: subscriptions_, update: update_, view: view_};
