@@ -12,6 +12,7 @@ module TimeTravel.Browser exposing
 
 # Start your Program
 @docs sandbox, element, document, application
+@docs defaultConfig, TimeTravelConfig
 
 -}
 
@@ -30,11 +31,15 @@ import Browser
 import Browser.Navigation exposing (Key)
 import Url
 
+{-| Record annotation if you want to please elm-format
+-}
 type alias TimeTravelConfig = 
   { startMinimized: Bool
   , startToLeft: Bool
   }
 
+{-| Default configuration record
+-}
 defaultConfig: TimeTravelConfig
 defaultConfig = 
   { startMinimized = False

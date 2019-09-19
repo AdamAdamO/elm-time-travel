@@ -23,7 +23,7 @@ other parameter in future.  See below for a sample of the configuration object.
 We need to pass 3 parameters to all TimTravel functions, 
 * a function to convert from Model to String (model --> String)
 * a function to convert from Msg to String (msg -> String)
-* a configuration record
+* a configuration record you can use the exposed defaultConfig and update it
 
 It is possible to use Debug.toString as the function to convert model or msg to String
 It is also possible to make your own but the result string should follow the same output as Debug.toString (json format)
@@ -45,8 +45,9 @@ main =
 Or, with a custom configuration:
 
 ```elm
-import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
+import TimeTravel.Browser as TimeTravel exposing (defaultConfig, TimeTravelConfig)
 
+config: TimeTravelConfig
 config = {defaultConfig
   | startMinimized = True
   , startToLeft = False
