@@ -10,14 +10,13 @@ import TimeTravel.Browser exposing (defaultConfig)
 
 -- MAIN
 config = {defaultConfig
-  | msgToString = Debug.toString
-  , modelToString = Debug.toString
+  | startMinimized = True
+  , startToLeft = True
   }
-
 
 main =
   --Browser.element
-  TimeTravel.Browser.element config
+  TimeTravel.Browser.element Debug.toString Debug.toString config
     { init = init
     , view = view
     , update = update

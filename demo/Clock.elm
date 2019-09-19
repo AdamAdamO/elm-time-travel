@@ -7,13 +7,8 @@ import Time exposing (Posix)
 
 import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
 
-config = {defaultConfig
-  | msgToString = Debug.toString
-  , modelToString = Debug.toString
-  }
-
 main =
-  TimeTravel.element config
+  TimeTravel.element Debug.toString Debug.toString defaultConfig
     { init = init
     , view = view
     , update = update

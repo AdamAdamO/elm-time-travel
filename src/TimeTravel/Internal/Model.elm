@@ -30,6 +30,7 @@ type alias Config model msg =
   { msgToString: msg -> String
   , modelToString: model -> String
   , startMinimized: Bool
+  , startToLeft: Bool
   }
 
 type alias HistoryItem model msg =

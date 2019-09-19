@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/jinjor/elm-time-travel.svg)](https://travis-ci.org/jinjor/elm-time-travel)
 
-This is a fork of jinjor's elm-time-travel upgraded to work with elm 0.19.
+This is a fork of the excellent jinjor's elm-time-travel updated to work with elm 0.19.
 An experimental debugger for Elm. See [DEMO](http://jinjor.github.io/elm-time-travel/)
 
 ## How to use
@@ -20,19 +20,41 @@ pass it through a configuration object to TimeTravel.
 Currently, this configuration object contains only 2 function, but may have 
 other parameter in future.  See below for a sample of the configuration object.
 
+We need to pass 3 parameters to all TimTravel functions, 
+* a function to convert from Model to String (model --> String)
+* a function to convert from Msg to String (msg -> String)
+* a configuration record
+
+It is possible to use Debug.toString as the function to convert model or msg to String
+It is also possible to make your own but the result string should follow the same output as Debug.toString (json format)
+
+
+```elm
+import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
+
+main =
+  -- Browser.element
+  TimeTravel.element Debug.toString Debug.toString defaultConfig
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
+```
+
+Or, with a custom configuration:
 
 ```elm
 import TimeTravel.Browser as TimeTravel exposing (defaultConfig)
 
 config = {defaultConfig
-  | msgToString = Debug.toString
-  , modelToString = Debug.toString
-  , startMinimized = True
+  | startMinimized = True
+  , startToLeft = False
   }
 
 main =
   -- Browser.element
-  TimeTravel.element config
+  TimeTravel.element Debug.toString Debug.toString config
     { init = init
     , view = view
     , update = update

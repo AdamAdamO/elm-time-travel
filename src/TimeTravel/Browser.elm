@@ -3,7 +3,8 @@ module TimeTravel.Browser exposing
   , element
   , document
   , application
-  , defaultConfig, Config
+  , defaultConfig
+  , TimeTravelConfig
   )
 
 
@@ -16,7 +17,7 @@ module TimeTravel.Browser exposing
 
 
 import TimeTravel.Internal.Model as Model exposing 
-  ( Config, Model, Msg(..)
+  ( Model, Msg(..)
   , OutgoingMsg, IncomingMsg
   , updateOnIncomingUserMsg
   )
@@ -29,13 +30,15 @@ import Browser
 import Browser.Navigation exposing (Key)
 import Url
 
-type alias Config model msg = Model.Config model msg
+type alias TimeTravelConfig = 
+  { startMinimized: Bool
+  , startToLeft: Bool
+  }
 
-defaultConfig: Config model msg
+defaultConfig: TimeTravelConfig
 defaultConfig = 
-  { msgToString = \_ -> ""
-  , modelToString = \_ -> ""
-  , startMinimized = False
+  { startMinimized = False
+  , startToLeft = False
   }
 
 type Msg msg
@@ -70,20 +73,22 @@ type alias OptionsForApplication flags model msg =
 {-| See [Browser.sandbox](https://package.elm-lang.org/packages/elm/browser/latest/Browser#sandbox)
 -}
 sandbox :
-  Config model msg
+  (model -> String)
+  -> (msg -> String)
+  -> TimeTravelConfig
   ->
   { init : model
   , view : model -> Html msg
   , update : msg -> model -> model
   }
   -> Program () (Model model msg) (Msg msg)
-sandbox config { init, view, update } =
+sandbox modelToString msgToString config { init, view, update } =
   let
     options =
       wrap
         { outgoingMsg = always Cmd.none
         , incomingMsg = always Sub.none
-        , config = config
+        , config = mergeConfig modelToString msgToString config
         }
         { init = always (init, Cmd.none)
         , view = view
@@ -101,7 +106,9 @@ sandbox config { init, view, update } =
 {-| See [Browser.element](https://package.elm-lang.org/packages/elm/browser/latest/Browser#element)
 -}
 element :
-  Config model msg
+  (model -> String)
+  -> (msg -> String)
+  -> TimeTravelConfig
   ->
   { init : flags -> (model, Cmd msg)
   , view : model -> Html msg
@@ -109,13 +116,13 @@ element :
   , subscriptions : model -> Sub msg
   }
   -> Program flags (Model model msg) (Msg msg)
-element config {init, view, update, subscriptions} =
+element modelToString msgToString config {init, view, update, subscriptions} =
   let
     options =
       wrap
         { outgoingMsg = always Cmd.none
         , incomingMsg = always Sub.none
-        , config = config
+        , config = mergeConfig modelToString msgToString config
         }
         { init = init
         , view = view
@@ -134,7 +141,9 @@ element config {init, view, update, subscriptions} =
 {-| See [Browser.document](https://package.elm-lang.org/packages/elm/browser/latest/Browser#document)
 -}
 document :
-  Config model msg
+  (model -> String)
+  -> (msg -> String)
+  -> TimeTravelConfig
   ->
   { init : flags -> (model, Cmd msg)
   , view : model -> Browser.Document msg
@@ -142,12 +151,12 @@ document :
   , subscriptions : model -> Sub msg
   }
   -> Program flags (Model model msg) (Msg msg)
-document config stuff =
+document modelToString msgToString config stuff =
   let
     options = 
       { outgoingMsg = always Cmd.none
       , incomingMsg = always Sub.none
-      , config = config
+      , config = mergeConfig modelToString msgToString config
       }
   in    
     Browser.document (wrapDocument options stuff)
@@ -156,7 +165,9 @@ document config stuff =
 {-| See [Browser.application](https://package.elm-lang.org/packages/elm/browser/latest/Browser#application)
 -}
 application :
-  Config model msg
+  (model -> String)
+  -> (msg -> String)
+  -> TimeTravelConfig
   ->
   { init : flags -> Url.Url -> Key -> (model, Cmd msg)
   , view : model -> Browser.Document msg
@@ -166,21 +177,28 @@ application :
   , onUrlChange : Url.Url -> msg
   }
   -> Program flags (Model model msg) (Msg msg)
-application config stuff =
+application modelToString msgToString config stuff =
   let
     options = 
       { outgoingMsg = always Cmd.none
       , incomingMsg = always Sub.none
-      , config = config
+      , config = mergeConfig modelToString msgToString config
       }
   in    
     Browser.application (wrapApplication options stuff)
 
+mergeConfig: (model -> String) -> (msg -> String)-> TimeTravelConfig -> Model.Config model msg
+mergeConfig modelToString msgToString config = 
+  { modelToString = modelToString
+  , msgToString = msgToString
+  , startMinimized = config.startMinimized
+  , startToLeft = config.startToLeft
+  }
 
 wrap :
   { outgoingMsg : OutgoingMsg -> Cmd Never
   , incomingMsg : (IncomingMsg -> (Msg msg)) -> Sub (Msg msg)
-  , config: Config model msg
+  , config: Model.Config model msg
   }
   -> OptionsWithFlags flags model msg
   -> OptionsWithFlags flags (Model model msg) (Msg msg)
@@ -209,7 +227,7 @@ wrap { outgoingMsg, incomingMsg, config } { init, view, update, subscriptions } 
 wrapDocument :
   { outgoingMsg : OutgoingMsg -> Cmd Never
   , incomingMsg : (IncomingMsg -> (Msg msg)) -> Sub (Msg msg)
-  , config: Config model msg
+  , config: Model.Config model msg
   }
   -> OptionsForDocument flags model msg
   -> OptionsForDocument flags (Model model msg) (Msg msg)
@@ -238,7 +256,7 @@ wrapDocument { outgoingMsg, incomingMsg, config } { init, view, update, subscrip
 wrapApplication :
   { outgoingMsg : OutgoingMsg -> Cmd Never
   , incomingMsg : (IncomingMsg -> (Msg msg)) -> Sub (Msg msg)
-  , config: Config model msg
+  , config: Model.Config model msg
   }
   -> OptionsForApplication flags model msg
   -> OptionsForApplication flags (Model model msg) (Msg msg)
@@ -271,17 +289,18 @@ wrapApplication { outgoingMsg, incomingMsg, config } { init, view, update, subsc
     , onUrlChange = onUrlChange_
     }
 
-wrapInit: Config model msg -> (model, Cmd msg) -> ( Model model msg, Cmd (Msg msg))
+wrapInit: Model.Config model msg -> (model, Cmd msg) -> ( Model model msg, Cmd (Msg msg))
 wrapInit config (model, cmd) = 
   let
     model_ = Model.init model
     newModel = {model_
       | minimized = config.startMinimized
+      , fixedToLeft = config.startToLeft
       }
   in
     (newModel, Cmd.batch [ Cmd.map (\msg -> UserMsg (Just 0, msg)) cmd ])
 
-wrapUpdate: Config model msg -> (msg -> model -> (model, Cmd msg)) -> (Model.OutgoingMsg -> Cmd Never) -> Msg msg -> Model model msg -> (Model model msg, Cmd (Msg msg))
+wrapUpdate: Model.Config model msg -> (msg -> model -> (model, Cmd msg)) -> (Model.OutgoingMsg -> Cmd Never) -> Msg msg -> Model model msg -> (Model model msg, Cmd (Msg msg))
 wrapUpdate config update outgoingMsg msg model =
   let
     toUserMessage (id_, msg_) = UserMsg (Just id_, msg_)

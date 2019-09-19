@@ -9,15 +9,9 @@ import TimeTravel.Browser exposing (defaultConfig)
 
 
 -- MAIN
-
-config = {defaultConfig
-  | msgToString = Debug.toString 
-  , modelToString = Debug.toString
-  }
-
 main =
   --Browser.document
-  TimeTravel.Browser.document config
+  TimeTravel.Browser.document Debug.toString Debug.toString defaultConfig
     { init = init
     , view = view
     , update = update

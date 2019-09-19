@@ -6,15 +6,9 @@ import Html.Events exposing (onClick, onInput)
 import TimeTravel.Browser exposing (defaultConfig)
 
 
-config = {defaultConfig
-  | msgToString = Debug.toString
-  , modelToString = Debug.toString
-  , startMinimized = True
-  }
-
 main =
---  Browser.sandbox { init = 0, update = update, view = view }
-  TimeTravel.Browser.sandbox config
+--  Browser.sandbox
+  TimeTravel.Browser.sandbox Debug.toString Debug.toString defaultConfig
     { init = init
     , update = update
     , view = view 

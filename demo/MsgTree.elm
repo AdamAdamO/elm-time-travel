@@ -14,13 +14,9 @@ import Process
 --
 -- port incoming : (TimeTravel.IncomingMsg -> msg) -> Sub msg
 
-config = {defaultConfig
-  | msgToString = Debug.toString
-  , modelToString = Debug.toString
-  }
 
 main =
-  TimeTravel.element config
+  TimeTravel.element Debug.toString Debug.toString defaultConfig
   -- TimeTravel.programWithOptions
   --   { outgoingMsg = outgoing
   --   , incomingMsg = incoming

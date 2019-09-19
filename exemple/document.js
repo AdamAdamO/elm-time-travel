@@ -4494,11 +4494,6 @@ var _Bitwise_shiftRightZfBy = F2(function(offset, a)
 {
 	return a >>> offset;
 });
-var elm$core$Array$branchFactor = 32;
-var elm$core$Array$Array_elm_builtin = F4(
-	function (a, b, c, d) {
-		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
-	});
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$GT = {$: 'GT'};
 var elm$core$Basics$LT = {$: 'LT'};
@@ -4579,6 +4574,12 @@ var elm$core$Array$foldr = F3(
 var elm$core$Array$toList = function (array) {
 	return A3(elm$core$Array$foldr, elm$core$List$cons, _List_Nil, array);
 };
+var elm$core$Debug$toString = _Debug_toString;
+var elm$core$Array$branchFactor = 32;
+var elm$core$Array$Array_elm_builtin = F4(
+	function (a, b, c, d) {
+		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
+	});
 var elm$core$Basics$ceiling = _Basics_ceiling;
 var elm$core$Basics$fdiv = _Basics_fdiv;
 var elm$core$Basics$logBase = F2(
@@ -4970,19 +4971,6 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 		}
 	});
 var elm$json$Json$Decode$succeed = _Json_succeed;
-var elm$core$Debug$toString = _Debug_toString;
-var savardd$elm_time_travel$TimeTravel$Browser$defaultConfig = {
-	modelToString: function (_n0) {
-		return '';
-	},
-	msgToString: function (_n1) {
-		return '';
-	},
-	startMinimized: false
-};
-var savardd$elm_time_travel$Document$config = _Utils_update(
-	savardd$elm_time_travel$TimeTravel$Browser$defaultConfig,
-	{modelToString: elm$core$Debug$toString, msgToString: elm$core$Debug$toString});
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -5703,6 +5691,7 @@ var savardd$elm_time_travel$Document$view = function (model) {
 		title: time
 	};
 };
+var savardd$elm_time_travel$TimeTravel$Browser$defaultConfig = {startMinimized: false, startToLeft: false};
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
 };
@@ -5857,6 +5846,10 @@ var elm$core$Basics$always = F2(
 	});
 var elm$core$Platform$Sub$batch = _Platform_batch;
 var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
+var savardd$elm_time_travel$TimeTravel$Browser$mergeConfig = F3(
+	function (modelToString, msgToString, config) {
+		return {modelToString: modelToString, msgToString: msgToString, startMinimized: config.startMinimized, startToLeft: config.startToLeft};
+	});
 var savardd$elm_time_travel$TimeTravel$Browser$DebuggerMsg = function (a) {
 	return {$: 'DebuggerMsg', a: a};
 };
@@ -5908,7 +5901,7 @@ var savardd$elm_time_travel$TimeTravel$Browser$wrapInit = F2(
 		var model_ = savardd$elm_time_travel$TimeTravel$Internal$Model$init(model);
 		var newModel = _Utils_update(
 			model_,
-			{minimized: config.startMinimized});
+			{fixedToLeft: config.startToLeft, minimized: config.startMinimized});
 		return _Utils_Tuple2(
 			newModel,
 			elm$core$Platform$Cmd$batch(
@@ -10717,19 +10710,21 @@ var savardd$elm_time_travel$TimeTravel$Browser$wrapDocument = F2(
 		};
 		return {init: init_, subscriptions: subscriptions_, update: update_, view: view_};
 	});
-var savardd$elm_time_travel$TimeTravel$Browser$document = F2(
-	function (config, stuff) {
+var savardd$elm_time_travel$TimeTravel$Browser$document = F4(
+	function (modelToString, msgToString, config, stuff) {
 		var options = {
-			config: config,
+			config: A3(savardd$elm_time_travel$TimeTravel$Browser$mergeConfig, modelToString, msgToString, config),
 			incomingMsg: elm$core$Basics$always(elm$core$Platform$Sub$none),
 			outgoingMsg: elm$core$Basics$always(elm$core$Platform$Cmd$none)
 		};
 		return elm$browser$Browser$document(
 			A2(savardd$elm_time_travel$TimeTravel$Browser$wrapDocument, options, stuff));
 	});
-var savardd$elm_time_travel$Document$main = A2(
+var savardd$elm_time_travel$Document$main = A4(
 	savardd$elm_time_travel$TimeTravel$Browser$document,
-	savardd$elm_time_travel$Document$config,
+	elm$core$Debug$toString,
+	elm$core$Debug$toString,
+	savardd$elm_time_travel$TimeTravel$Browser$defaultConfig,
 	{init: savardd$elm_time_travel$Document$init, subscriptions: savardd$elm_time_travel$Document$subscriptions, update: savardd$elm_time_travel$Document$update, view: savardd$elm_time_travel$Document$view});
 _Platform_export({'Document':{'init':savardd$elm_time_travel$Document$main(
 	elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
